@@ -4,6 +4,9 @@ spring-boot = "3.3.4"
 spring-dependency-management = "1.1.6"
 kotest = "5.9.1"
 
+# spring-boot-starter*, kotlin-reflect: versionless — resolved via the Spring Boot BOM,
+# which only io.spring.dependency-management (applied in bootstrap) imports.
+# A module using these without that plugin will fail to resolve.
 [libraries]
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }
