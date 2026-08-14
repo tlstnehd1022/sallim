@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Caprasimo&family=Figtree:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<style>
+  body { margin: 0; background: #d9d7d2; }
+  a { color: inherit; text-decoration: none; }
+  a:hover { color: inherit; }
+  input { font: inherit; }
+  @keyframes sprk { 0% { opacity: 0; transform: scale(.55); } 35% { opacity: 1; } 100% { opacity: 0; transform: scale(1.45); } }
+  @keyframes wipe { from { transform: translateX(-130%) skewX(-12deg); } to { transform: translateX(130%) skewX(-12deg); } }
+  @keyframes pop { from { opacity: 0; transform: translateY(6px) scale(.96); } to { opacity: 1; transform: none; } }
+  @keyframes slideup { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+</style>
+</helmet>
+
+<section style="position:absolute;left:0;top:0;display:flex;gap:96px;padding:64px">
+
+  <div id="2a" style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;align-items:center;gap:10px;font-family:Inter,sans-serif">
+      <span style="background:#161826;color:#e9e9ed;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600">2a</span>
+      <span style="font-size:15px;color:#3f424d;font-weight:500">Nocturne — 평면도 편집 · 오늘/일정 통합 · 할일 관리</span>
+    </div>
+
+    <div style="width:390px;height:844px;border-radius:44px;background:#161826;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(0,0,0,.35);font-family:Inter,system-ui,sans-serif;color:#e9e9ed">
+      <div style="height:46px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 6px;font-size:12px;color:#9397ab">
+        <span>9:41</span>
+        <span style="display:flex;gap:5px"><i class="ph ph-wifi-high"></i><i class="ph ph-battery-high"></i></span>
+      </div>
+
+      <sc-if value="{{ screenN.home }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:8px 22px 0">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+            <div>
+              <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9184d9">{{ editN.kicker }}</div>
+              <h1 style="margin:6px 0 0;font-size:26px;font-weight:500;letter-spacing:-.01em">{{ editN.title }}</h1>
+            </div>
+            <div onClick="{{ editN.toggle }}" style="flex:none;cursor:pointer;font-size:12px;padding:7px 13px;border-radius:999px;border:1px solid {{ editN.btnBorder }};color:{{ editN.btnColor }};background:{{ editN.btnBg }}">{{ editN.btnLabel }}</div>
+          </div>
+
+          <sc-if value="{{ editN.off }}" hint-placeholder-val="{{ true }}">
+            <div style="margin-top:16px;display:flex;align-items:center;gap:12px">
+              <div style="flex:1;height:4px;border-radius:999px;background:#292b31;overflow:hidden">
+                <div style="height:100%;background:#9184d9;box-shadow:0 0 10px rgba(145,132,217,.7);width:{{ statN.pctW }}"></div>
+              </div>
+              <div style="font-size:12px;color:#b2b6ca;font-variant-numeric:tabular-nums">{{ statN.done }}/{{ statN.total }}</div>
+            </div>
+            <div style="margin-top:7px;font-size:12px;color:#75798c">{{ statN.quip }}</div>
+          </sc-if>
+          <sc-if value="{{ editN.on }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:14px;font-size:12px;color:#75798c">방을 눌러 고르고, 아래에서 이름·위치·크기를 바꾸세요.</div>
+          </sc-if>
+        </div>
+
+        <div style="margin:14px 18px 0;position:relative;height:404px">
+          <sc-for list="{{ roomsN }}" as="r" hint-placeholder-count="10">
+            <div onClick="{{ r.tap }}" style="position:absolute;left:{{ r.left }};top:{{ r.top }};width:{{ r.w }};height:{{ r.h }};z-index:{{ r.z }};border-radius:8px;overflow:hidden;cursor:pointer;background:#232532;box-shadow:{{ r.frame }}">
+              <div style="position:absolute;inset:0;border-radius:8px;background:#2b2741;box-shadow:inset 0 0 0 1px #5d5294, 0 0 16px rgba(145,132,217,.28);opacity:{{ r.cleanOp }}"></div>
+              <div style="position:absolute;inset:0;background-image:radial-gradient(#9397ab 1.1px, transparent 1.5px);background-size:9px 9px;opacity:{{ r.dust }}"></div>
+              <div style="position:absolute;inset:0;background:radial-gradient(60% 70% at 30% 80%, rgba(89,93,108,.55), transparent 70%);opacity:{{ r.dust }}"></div>
+              <sc-if value="{{ r.sparking }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden">
+                  <div style="position:absolute;inset:-10%;border-radius:12px;box-shadow:inset 0 0 22px rgba(181,171,252,.85);animation:sprk .9s ease-out forwards"></div>
+                  <div style="position:absolute;top:0;bottom:0;width:40%;background:linear-gradient(90deg,transparent,rgba(210,206,253,.5),transparent);animation:wipe .8s ease-in-out"></div>
+                </div>
+              </sc-if>
+              <div style="position:absolute;left:8px;bottom:7px;right:8px;display:flex;align-items:center;flex-wrap:wrap;gap:5px">
+                <span style="font-size:{{ r.fs }};color:{{ r.labelColor }};font-weight:500;white-space:nowrap">{{ r.name }}</span>
+                <sc-if value="{{ r.showBadge }}" hint-placeholder-val="{{ true }}">
+                  <span style="font-size:10px;font-weight:600;color:#161826;background:#b5abfc;border-radius:999px;min-width:16px;height:16px;padding:0 5px;display:flex;align-items:center;justify-content:center">{{ r.todo }}</span>
+                </sc-if>
+                <sc-if value="{{ r.showClean }}" hint-placeholder-val="{{ false }}">
+                  <i class="ph-fill ph-sparkle" style="font-size:12px;color:#b5abfc"></i>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+
+          <sc-if value="{{ popN.open }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;z-index:40;left:{{ popN.left }};top:{{ popN.top }};width:222px;background:#232532;border-radius:14px;box-shadow:0 0 0 1px #595d6c, 0 16px 40px rgba(0,0,0,.65);padding:12px 12px 10px;animation:pop .16s ease-out">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                <span style="font-size:14px;font-weight:500">{{ popN.name }}</span>
+                <span onClick="{{ popN.close }}" style="cursor:pointer;color:#9397ab;font-size:14px;line-height:1"><i class="ph ph-x"></i></span>
+              </div>
+              <div style="margin-top:9px;display:flex;flex-direction:column;gap:2px">
+                <sc-for list="{{ popN.tasks }}" as="t" hint-placeholder-count="3">
+                  <div style="display:flex;align-items:center;gap:9px;padding:7px 6px;border-radius:8px">
+                    <span onClick="{{ t.toggle }}" style="cursor:pointer;width:16px;height:16px;border-radius:5px;flex:none;display:flex;align-items:center;justify-content:center;font-size:10px;color:#161826;border:1px solid {{ t.boxBorder }};background:{{ t.boxBg }}">{{ t.mark }}</span>
+                    <span onClick="{{ t.toggle }}" style="cursor:pointer;flex:1;font-size:13px;color:{{ t.color }};text-decoration:{{ t.deco }}">{{ t.label }}</span>
+                    <span onClick="{{ t.openDetail }}" style="cursor:pointer;color:#9184d9;font-size:13px;line-height:1"><i class="ph ph-info"></i></span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="margin-top:6px;padding-top:8px;border-top:1px solid #292b31;font-size:11px;color:#75798c">{{ popN.hint }}</div>
+            </div>
+          </sc-if>
+        </div>
+
+        <sc-if value="{{ editN.on }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;left:14px;right:14px;bottom:92px;z-index:60;background:#232532;border-radius:14px;box-shadow:0 0 0 1px #595d6c, 0 16px 40px rgba(0,0,0,.65);padding:13px;animation:slideup .18s ease-out">
+            <sc-if value="{{ editN.hasSel }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;align-items:center;gap:8px">
+                <input value="{{ editN.name }}" onChange="{{ editN.rename }}" style="flex:1;background:#161826;border:1px solid #3f424d;border-radius:8px;color:#e9e9ed;padding:8px 10px;font-size:13px;outline:none">
+                <div onClick="{{ editN.remove }}" style="cursor:pointer;width:34px;height:34px;border-radius:8px;border:1px solid #3f424d;display:flex;align-items:center;justify-content:center;color:#b2b6ca"><i class="ph ph-trash"></i></div>
+              </div>
+              <div style="margin-top:11px;display:flex;align-items:center;gap:10px">
+                <span style="font-size:11px;color:#75798c;width:28px">위치</span>
+                <div style="display:flex;gap:6px">
+                  <div onClick="{{ editN.left }}" style="cursor:pointer;width:34px;height:30px;border-radius:8px;border:1px solid #3f424d;display:flex;align-items:center;justify-content:center;color:#d2cefd"><i class="ph ph-arrow-left"></i></div>
+                  <div onClick="{{ editN.up }}" style="cursor:pointer;width:34px;height:30px;border-radius:8px;border:1px solid #3f424d;display:flex;align-items:center;justify-content:center;color:#d2cefd"><i class="ph ph-arrow-up"></i></div>
+                  <div onClick="{{ editN.down }}" style="cursor:pointer;width:34px;height:30px;border-radius:8px;border:1px solid #3f424d;display:flex;align-items:center;justify-content:center;color:#d2cefd"><i class="ph ph-arrow-down"></i></div>
+                  <div onClick="{{ editN.right }}" style="cursor:pointer;width:34px;height:30px;border-radius:8px;border:1px solid #3f424d;display:flex;align-items:center;justify-content:center;color:#d2cefd"><i class="ph ph-arrow-right"></i></div>
+                </div>
+              </div>
+              <div style="margin-top:8px;display:flex;align-items:center;gap:10px">
+                <span style="font-size:11px;color:#75798c;width:28px">크기</span>
+                <div style="display:flex;gap:6px">
+                  <div onClick="{{ editN.narrow }}" style="cursor:pointer;height:30px;padding:0 11px;border-radius:8px;border:1px solid #3f424d;display:flex;align-items:center;font-size:12px;color:#d2cefd">가로 −</div>
+                  <div onClick="{{ editN.wider }}" style="cursor:pointer;height:30px;padding:0 11px;border-radius:8px;border:1px solid #3f424d;display:flex;align-items:center;font-size:12px;color:#d2cefd">＋</div>
+                  <div onClick="{{ editN.shorter }}" style="cursor:pointer;height:30px;padding:0 11px;border-radius:8px;border:1px solid #3f424d;display:flex;align-items:center;font-size:12px;color:#d2cefd">세로 −</div>
+                  <div onClick="{{ editN.taller }}" style="cursor:pointer;height:30px;padding:0 11px;border-radius:8px;border:1px solid #3f424d;display:flex;align-items:center;font-size:12px;color:#d2cefd">＋</div>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ editN.noSel }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:12px;color:#9397ab;padding:4px 2px 10px">수정할 방을 위에서 골라주세요.</div>
+            </sc-if>
+            <div style="margin-top:11px;display:flex;gap:8px">
+              <div onClick="{{ editN.add }}" style="flex:1;cursor:pointer;text-align:center;padding:9px;border-radius:8px;border:1px solid #5d5294;color:#b5abfc;font-size:13px">방 추가</div>
+              <div onClick="{{ editN.reset }}" style="cursor:pointer;padding:9px 14px;border-radius:8px;border:1px solid #3f424d;color:#9397ab;font-size:13px">되돌리기</div>
+            </div>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <sc-if value="{{ screenN.plan }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:12px 22px 0">
+          <h1 style="margin:0;font-size:26px;font-weight:500">{{ planN.title }}</h1>
+          <div style="margin-top:14px;display:flex;gap:7px">
+            <div onClick="{{ planN.goToday }}" style="cursor:pointer;font-size:13px;padding:7px 15px;border-radius:999px;border:1px solid {{ planN.todayBorder }};color:{{ planN.todayColor }}">오늘</div>
+            <div onClick="{{ planN.goWeek }}" style="cursor:pointer;font-size:13px;padding:7px 15px;border-radius:999px;border:1px solid {{ planN.weekBorder }};color:{{ planN.weekColor }}">일정</div>
+          </div>
+
+          <sc-if value="{{ planN.isToday }}" hint-placeholder-val="{{ true }}">
+            <div style="margin-top:10px;font-size:12px;color:#75798c">{{ statN.done }}개 끝, {{ statN.left }}개 남음</div>
+            <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;max-height:512px;overflow:auto">
+              <sc-for list="{{ todoN }}" as="t" hint-placeholder-count="8">
+                <div style="display:flex;align-items:center;gap:11px;padding:12px 13px;border-radius:8px;background:#232532;box-shadow:inset 0 0 0 1px #3f424d">
+                  <span onClick="{{ t.toggle }}" style="cursor:pointer;width:18px;height:18px;border-radius:6px;flex:none;display:flex;align-items:center;justify-content:center;font-size:11px;color:#161826;border:1px solid {{ t.boxBorder }};background:{{ t.boxBg }}">{{ t.mark }}</span>
+                  <div onClick="{{ t.openDetail }}" style="cursor:pointer;flex:1;min-width:0">
+                    <div style="font-size:14px;color:{{ t.color }};text-decoration:{{ t.deco }}">{{ t.label }}</div>
+                    <div style="font-size:11px;color:#75798c;margin-top:2px">{{ t.room }} · {{ t.who }}</div>
+                  </div>
+                  <i class="ph ph-caret-right" style="color:#595d6c;font-size:13px"></i>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ planN.isWeek }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:16px;display:grid;grid-template-columns:repeat(7,1fr);gap:6px">
+              <sc-for list="{{ weekN }}" as="d" hint-placeholder-count="7">
+                <div style="border-radius:8px;padding:9px 0 10px;text-align:center;background:{{ d.bg }};box-shadow:inset 0 0 0 1px {{ d.border }}">
+                  <div style="font-size:10px;color:#9397ab">{{ d.dow }}</div>
+                  <div style="font-size:15px;margin-top:3px;color:{{ d.numColor }}">{{ d.num }}</div>
+                  <div style="height:4px;width:4px;border-radius:999px;margin:6px auto 0;background:{{ d.dot }}"></div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="margin-top:20px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#75798c">반복 집안일</div>
+            <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ routinesN }}" as="r" hint-placeholder-count="5">
+                <div onClick="{{ r.openDetail }}" style="cursor:pointer;display:flex;align-items:center;gap:11px;padding:13px;border-radius:8px;background:#232532;box-shadow:inset 0 0 0 1px #3f424d">
+                  <i class="ph ph-arrows-clockwise" style="font-size:15px;color:#9184d9"></i>
+                  <div style="flex:1">
+                    <div style="font-size:14px">{{ r.label }}</div>
+                    <div style="font-size:11px;color:#75798c;margin-top:2px">{{ r.cycle }} · {{ r.room }}</div>
+                  </div>
+                  <span style="font-size:10px;padding:3px 8px;border-radius:999px;color:#d2cefd;background:#2b2741;border:1px solid #423a6a">{{ r.who }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ screenN.tasks }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ detailN.closed }}" hint-placeholder-val="{{ true }}">
+          <div style="padding:12px 22px 0">
+            <h1 style="margin:0;font-size:26px;font-weight:500">할일 관리</h1>
+            <div style="margin-top:6px;font-size:12px;color:#75798c">방법·주기·영상 링크를 여기서 손봅니다</div>
+            <div style="margin-top:16px;display:flex;flex-direction:column;gap:16px;max-height:560px;overflow:auto">
+              <sc-for list="{{ groupsN }}" as="g" hint-placeholder-count="5">
+                <div>
+                  <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#9184d9">{{ g.name }}</div>
+                  <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px">
+                    <sc-for list="{{ g.tasks }}" as="t" hint-placeholder-count="3">
+                      <div onClick="{{ t.openDetail }}" style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:8px;background:#232532;box-shadow:inset 0 0 0 1px #3f424d">
+                        <div style="flex:1;min-width:0">
+                          <div style="font-size:14px">{{ t.label }}</div>
+                          <div style="font-size:11px;color:#75798c;margin-top:2px">{{ t.cycle }} · {{ t.who }}</div>
+                        </div>
+                        <i class="ph ph-caret-right" style="color:#595d6c;font-size:13px"></i>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ detailN.open }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:12px 22px 0">
+            <div onClick="{{ detailN.back }}" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#9397ab"><i class="ph ph-caret-left"></i>{{ detailN.room }}</div>
+            <h1 style="margin:10px 0 0;font-size:25px;font-weight:500">{{ detailN.label }}</h1>
+            <div style="margin-top:10px;display:flex;gap:6px">
+              <span style="font-size:11px;padding:4px 10px;border-radius:999px;color:#d2cefd;background:#2b2741;border:1px solid #423a6a">{{ detailN.who }}</span>
+              <span style="font-size:11px;padding:4px 10px;border-radius:999px;color:#b2b6ca;border:1px solid #3f424d">{{ detailN.cycle }}</span>
+            </div>
+
+            <div style="margin-top:22px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#75798c">하는 방법</div>
+            <div style="margin-top:12px;display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ detailN.steps }}" as="s" hint-placeholder-count="3">
+                <div style="display:flex;gap:11px;align-items:flex-start">
+                  <span style="flex:none;width:20px;height:20px;border-radius:999px;border:1px solid #5d5294;color:#b5abfc;font-size:11px;display:flex;align-items:center;justify-content:center">{{ s.n }}</span>
+                  <span style="font-size:14px;color:#e4e7f5;line-height:1.5;text-wrap:pretty">{{ s.text }}</span>
+                </div>
+              </sc-for>
+            </div>
+
+            <a href="{{ detailN.ytUrl }}" target="_blank" style="margin-top:22px;display:flex;align-items:center;gap:11px;padding:13px;border-radius:8px;border:1px solid #5d5294">
+              <i class="ph-fill ph-youtube-logo" style="font-size:20px;color:#b5abfc"></i>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:13px;color:#d2cefd">{{ detailN.yt }}</div>
+                <div style="font-size:11px;color:#75798c;margin-top:2px">유튜브에서 보기</div>
+              </div>
+              <i class="ph ph-arrow-up-right" style="color:#75798c;font-size:13px"></i>
+            </a>
+
+            <div onClick="{{ detailN.toggle }}" style="margin-top:12px;cursor:pointer;text-align:center;padding:12px;border-radius:8px;border:1px solid {{ detailN.doneBorder }};color:{{ detailN.doneColor }};font-size:14px">{{ detailN.doneLabel }}</div>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <sc-if value="{{ screenN.log }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:12px 22px 0">
+          <h1 style="margin:0;font-size:26px;font-weight:500">기록</h1>
+          <div style="margin-top:6px;font-size:12px;color:#75798c">지난 4주 · 누가 더 했는지 조용히 세는 중</div>
+          <div style="margin-top:20px;display:flex;gap:10px">
+            <div style="flex:1;padding:14px;border-radius:8px;background:#232532;box-shadow:inset 0 0 0 1px #3f424d">
+              <div style="font-size:11px;color:#9397ab">나</div>
+              <div style="font-size:30px;font-weight:500;margin-top:4px">58</div>
+              <div style="font-size:11px;color:#75798c;margin-top:2px">건 완료</div>
+            </div>
+            <div style="flex:1;padding:14px;border-radius:8px;background:#2b2741;box-shadow:inset 0 0 0 1px #5d5294">
+              <div style="font-size:11px;color:#b5abfc">짝꿍</div>
+              <div style="font-size:30px;font-weight:500;margin-top:4px;color:#d2cefd">61</div>
+              <div style="font-size:11px;color:#9690c9;margin-top:2px">건 완료 · 근소한 승</div>
+            </div>
+          </div>
+          <div style="margin-top:20px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#75798c">방별 청결 유지율</div>
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:11px">
+            <sc-for list="{{ ratesN }}" as="s" hint-placeholder-count="6">
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;color:#b2b6ca"><span>{{ s.name }}</span><span style="font-variant-numeric:tabular-nums">{{ s.pct }}%</span></div>
+                <div style="margin-top:5px;height:3px;border-radius:999px;background:#292b31;overflow:hidden">
+                  <div style="height:100%;background:#9184d9;width:{{ s.w }}"></div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <div style="position:absolute;left:0;right:0;bottom:0;height:82px;background:linear-gradient(180deg, rgba(22,24,38,0), #161826 34%);display:flex;align-items:flex-start;justify-content:space-around;padding:14px 18px 0;border-top:1px solid #292b31;z-index:70">
+        <div onClick="{{ goN.home }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:{{ screenN.homeColor }}"><i class="ph ph-house" style="font-size:20px"></i><span style="font-size:10px">평면도</span></div>
+        <div onClick="{{ goN.plan }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:{{ screenN.planColor }}"><i class="ph ph-calendar-check" style="font-size:20px"></i><span style="font-size:10px">오늘·일정</span></div>
+        <div onClick="{{ goN.tasks }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:{{ screenN.tasksColor }}"><i class="ph ph-list-checks" style="font-size:20px"></i><span style="font-size:10px">할일</span></div>
+        <div onClick="{{ goN.log }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:{{ screenN.logColor }}"><i class="ph ph-chart-bar" style="font-size:20px"></i><span style="font-size:10px">기록</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="2b" style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;align-items:center;gap:10px;font-family:Figtree,sans-serif">
+      <span style="background:#c67139;color:#fff2eb;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700">2b</span>
+      <span style="font-size:15px;color:#645c50;font-weight:600">Organic — 평면도 편집 · 오늘/일정 통합 · 할일 관리</span>
+    </div>
+
+    <div style="width:390px;height:844px;border-radius:44px;background:#f5ead8;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(46,43,37,.28);font-family:Figtree,system-ui,sans-serif;color:#201e1d">
+      <div style="height:46px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 6px;font-size:12px;color:#82796a;font-weight:600">
+        <span>9:41</span>
+        <span style="display:flex;gap:5px"><span style="width:16px;height:8px;border-radius:3px;background:#a19786;display:inline-block"></span></span>
+      </div>
+
+      <sc-if value="{{ screenO.home }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:8px 24px 0">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+            <div>
+              <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8c491a;font-weight:700">{{ editO.kicker }}</div>
+              <h1 style="margin:6px 0 0;font-family:Caprasimo,serif;font-weight:400;font-size:27px;line-height:1.14">{{ editO.title }}</h1>
+            </div>
+            <div onClick="{{ editO.toggle }}" style="flex:none;cursor:pointer;font-size:13px;font-weight:700;padding:9px 15px;border-radius:999px;color:{{ editO.btnColor }};background:{{ editO.btnBg }}">{{ editO.btnLabel }}</div>
+          </div>
+
+          <sc-if value="{{ editO.off }}" hint-placeholder-val="{{ true }}">
+            <div style="margin-top:16px;display:flex;align-items:center;gap:12px">
+              <div style="flex:1;height:10px;border-radius:999px;background:#dcd3c4;overflow:hidden">
+                <div style="height:100%;border-radius:999px;background:#c67139;width:{{ statO.pctW }}"></div>
+              </div>
+              <div style="font-size:13px;color:#645c50;font-weight:700;font-variant-numeric:tabular-nums">{{ statO.done }}/{{ statO.total }}</div>
+            </div>
+            <div style="margin-top:8px;font-size:13px;color:#82796a">{{ statO.quip }}</div>
+          </sc-if>
+          <sc-if value="{{ editO.on }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:14px;font-size:13px;color:#82796a">방을 눌러 고르고, 아래에서 이름·위치·크기를 바꾸세요.</div>
+          </sc-if>
+        </div>
+
+        <div style="margin:16px 20px 0;position:relative;height:398px">
+          <sc-for list="{{ roomsO }}" as="r" hint-placeholder-count="10">
+            <div onClick="{{ r.tap }}" style="position:absolute;left:{{ r.left }};top:{{ r.top }};width:{{ r.w }};height:{{ r.h }};z-index:{{ r.z }};border-radius:16px;overflow:hidden;cursor:pointer;background:#dcd3c4;box-shadow:{{ r.frame }}">
+              <div style="position:absolute;inset:0;border-radius:16px;background:#e1eecc;box-shadow:inset 0 0 0 2px #aebf92;opacity:{{ r.cleanOp }}"></div>
+              <div style="position:absolute;inset:0;background-image:radial-gradient(#82796a 1.3px, transparent 1.7px);background-size:10px 10px;opacity:{{ r.dust }}"></div>
+              <div style="position:absolute;inset:0;background:radial-gradient(65% 75% at 32% 78%, rgba(130,121,106,.45), transparent 72%);opacity:{{ r.dust }}"></div>
+              <sc-if value="{{ r.sparking }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden">
+                  <div style="position:absolute;inset:-10%;border-radius:20px;box-shadow:inset 0 0 26px rgba(198,113,57,.75);animation:sprk .9s ease-out forwards"></div>
+                  <div style="position:absolute;top:0;bottom:0;width:42%;background:linear-gradient(90deg,transparent,rgba(255,242,235,.85),transparent);animation:wipe .8s ease-in-out"></div>
+                </div>
+              </sc-if>
+              <div style="position:absolute;left:10px;bottom:8px;right:9px;display:flex;align-items:center;flex-wrap:wrap;gap:5px">
+                <span style="font-size:{{ r.fs }};color:{{ r.labelColor }};font-weight:700;white-space:nowrap">{{ r.name }}</span>
+                <sc-if value="{{ r.showBadge }}" hint-placeholder-val="{{ true }}">
+                  <span style="font-size:10px;font-weight:700;color:#fff2eb;background:#c67139;border-radius:999px;min-width:18px;height:18px;padding:0 6px;display:flex;align-items:center;justify-content:center">{{ r.todo }}</span>
+                </sc-if>
+                <sc-if value="{{ r.showClean }}" hint-placeholder-val="{{ false }}">
+                  <span style="width:8px;height:8px;border-radius:999px;background:#7a8a5e;flex:none"></span>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+
+          <sc-if value="{{ popO.open }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;z-index:40;left:{{ popO.left }};top:{{ popO.top }};width:232px;background:#fff9ef;border-radius:28px;box-shadow:0 12px 32px rgba(46,43,37,.26);padding:16px 16px 13px;animation:pop .16s ease-out">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                <span style="font-family:Caprasimo,serif;font-size:17px">{{ popO.name }}</span>
+                <span onClick="{{ popO.close }}" style="cursor:pointer;width:26px;height:26px;border-radius:999px;background:#eee7db;color:#645c50;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">×</span>
+              </div>
+              <div style="margin-top:10px;display:flex;flex-direction:column;gap:4px">
+                <sc-for list="{{ popO.tasks }}" as="t" hint-placeholder-count="3">
+                  <div style="display:flex;align-items:center;gap:10px;padding:8px;border-radius:999px;background:{{ t.rowBg }}">
+                    <span onClick="{{ t.toggle }}" style="cursor:pointer;width:20px;height:20px;border-radius:999px;flex:none;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff2eb;border:2px solid {{ t.boxBorder }};background:{{ t.boxBg }}">{{ t.mark }}</span>
+                    <span onClick="{{ t.toggle }}" style="cursor:pointer;flex:1;font-size:14px;font-weight:600;color:{{ t.color }};text-decoration:{{ t.deco }}">{{ t.label }}</span>
+                    <span onClick="{{ t.openDetail }}" style="cursor:pointer;width:22px;height:22px;border-radius:999px;background:#ffe1d0;color:#8c491a;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">?</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="margin-top:9px;font-size:12px;color:#82796a">{{ popO.hint }}</div>
+            </div>
+          </sc-if>
+        </div>
+
+        <sc-if value="{{ editO.on }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;left:16px;right:16px;bottom:92px;z-index:60;background:#fff9ef;border-radius:28px;box-shadow:0 12px 32px rgba(46,43,37,.26);padding:16px;animation:slideup .18s ease-out">
+            <sc-if value="{{ editO.hasSel }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;align-items:center;gap:9px">
+                <input value="{{ editO.name }}" onChange="{{ editO.rename }}" style="flex:1;background:#f9f4ed;border:2px solid #dcd3c4;border-radius:999px;color:#201e1d;padding:9px 14px;font-size:14px;font-weight:600;outline:none">
+                <div onClick="{{ editO.remove }}" style="cursor:pointer;width:38px;height:38px;border-radius:999px;background:#eee7db;display:flex;align-items:center;justify-content:center;color:#645c50;font-size:15px">🗑</div>
+              </div>
+              <div style="margin-top:12px;display:flex;align-items:center;gap:10px">
+                <span style="font-size:12px;font-weight:700;color:#82796a;width:28px">위치</span>
+                <div style="display:flex;gap:6px">
+                  <div onClick="{{ editO.left }}" style="cursor:pointer;width:38px;height:34px;border-radius:999px;background:#eee7db;display:flex;align-items:center;justify-content:center;color:#8c491a;font-weight:700">←</div>
+                  <div onClick="{{ editO.up }}" style="cursor:pointer;width:38px;height:34px;border-radius:999px;background:#eee7db;display:flex;align-items:center;justify-content:center;color:#8c491a;font-weight:700">↑</div>
+                  <div onClick="{{ editO.down }}" style="cursor:pointer;width:38px;height:34px;border-radius:999px;background:#eee7db;display:flex;align-items:center;justify-content:center;color:#8c491a;font-weight:700">↓</div>
+                  <div onClick="{{ editO.right }}" style="cursor:pointer;width:38px;height:34px;border-radius:999px;background:#eee7db;display:flex;align-items:center;justify-content:center;color:#8c491a;font-weight:700">→</div>
+                </div>
+              </div>
+              <div style="margin-top:9px;display:flex;align-items:center;gap:10px">
+                <span style="font-size:12px;font-weight:700;color:#82796a;width:28px">크기</span>
+                <div style="display:flex;gap:6px">
+                  <div onClick="{{ editO.narrow }}" style="cursor:pointer;height:34px;padding:0 13px;border-radius:999px;background:#eee7db;display:flex;align-items:center;font-size:13px;font-weight:600;color:#645c50">가로 −</div>
+                  <div onClick="{{ editO.wider }}" style="cursor:pointer;height:34px;padding:0 13px;border-radius:999px;background:#eee7db;display:flex;align-items:center;font-size:13px;font-weight:600;color:#645c50">＋</div>
+                  <div onClick="{{ editO.shorter }}" style="cursor:pointer;height:34px;padding:0 13px;border-radius:999px;background:#eee7db;display:flex;align-items:center;font-size:13px;font-weight:600;color:#645c50">세로 −</div>
+                  <div onClick="{{ editO.taller }}" style="cursor:pointer;height:34px;padding:0 13px;border-radius:999px;background:#eee7db;display:flex;align-items:center;font-size:13px;font-weight:600;color:#645c50">＋</div>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ editO.noSel }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:13px;color:#82796a;padding:2px 2px 10px">수정할 방을 위에서 골라주세요.</div>
+            </sc-if>
+            <div style="margin-top:12px;display:flex;gap:9px">
+              <div onClick="{{ editO.add }}" style="flex:1;cursor:pointer;text-align:center;padding:11px;border-radius:999px;background:#c67139;color:#fff2eb;font-size:14px;font-weight:700">방 추가</div>
+              <div onClick="{{ editO.reset }}" style="cursor:pointer;padding:11px 16px;border-radius:999px;background:#eee7db;color:#645c50;font-size:14px;font-weight:700">되돌리기</div>
+            </div>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <sc-if value="{{ screenO.plan }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:12px 24px 0">
+          <h1 style="margin:0;font-family:Caprasimo,serif;font-weight:400;font-size:30px">{{ planO.title }}</h1>
+          <div style="margin-top:14px;display:flex;gap:7px;background:#ebddc5;border-radius:999px;padding:4px;width:fit-content">
+            <div onClick="{{ planO.goToday }}" style="cursor:pointer;font-size:13px;font-weight:700;padding:8px 20px;border-radius:999px;background:{{ planO.todayBg }};color:{{ planO.todayColor }}">오늘</div>
+            <div onClick="{{ planO.goWeek }}" style="cursor:pointer;font-size:13px;font-weight:700;padding:8px 20px;border-radius:999px;background:{{ planO.weekBg }};color:{{ planO.weekColor }}">일정</div>
+          </div>
+
+          <sc-if value="{{ planO.isToday }}" hint-placeholder-val="{{ true }}">
+            <div style="margin-top:12px;font-size:13px;color:#82796a">{{ statO.done }}개 끝, {{ statO.left }}개 남음</div>
+            <div style="margin-top:12px;display:flex;flex-direction:column;gap:9px;max-height:504px;overflow:auto">
+              <sc-for list="{{ todoO }}" as="t" hint-placeholder-count="8">
+                <div style="display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:28px;background:{{ t.rowBg }}">
+                  <span onClick="{{ t.toggle }}" style="cursor:pointer;width:22px;height:22px;border-radius:999px;flex:none;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff2eb;border:2px solid {{ t.boxBorder }};background:{{ t.boxBg }}">{{ t.mark }}</span>
+                  <div onClick="{{ t.openDetail }}" style="cursor:pointer;flex:1;min-width:0">
+                    <div style="font-size:15px;font-weight:600;color:{{ t.color }};text-decoration:{{ t.deco }}">{{ t.label }}</div>
+                    <div style="font-size:12px;color:#82796a;margin-top:2px">{{ t.room }} · {{ t.who }}</div>
+                  </div>
+                  <span style="color:#a19786;font-weight:700">›</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ planO.isWeek }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:16px;display:grid;grid-template-columns:repeat(7,1fr);gap:7px">
+              <sc-for list="{{ weekO }}" as="d" hint-placeholder-count="7">
+                <div style="border-radius:16px;padding:10px 0 11px;text-align:center;background:{{ d.bg }}">
+                  <div style="font-size:10px;font-weight:700;color:#82796a">{{ d.dow }}</div>
+                  <div style="font-size:16px;font-weight:700;margin-top:3px;color:{{ d.numColor }}">{{ d.num }}</div>
+                  <div style="height:6px;width:6px;border-radius:999px;margin:6px auto 0;background:{{ d.dot }}"></div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="margin-top:20px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#82796a;font-weight:700">반복 집안일</div>
+            <div style="margin-top:12px;display:flex;flex-direction:column;gap:9px">
+              <sc-for list="{{ routinesO }}" as="r" hint-placeholder-count="5">
+                <div onClick="{{ r.openDetail }}" style="cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:28px;background:#ebddc5">
+                  <span style="width:10px;height:10px;border-radius:999px;background:#7a8a5e;flex:none"></span>
+                  <div style="flex:1">
+                    <div style="font-size:15px;font-weight:600">{{ r.label }}</div>
+                    <div style="font-size:12px;color:#82796a;margin-top:2px">{{ r.cycle }} · {{ r.room }}</div>
+                  </div>
+                  <span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;color:#8c491a;background:#ffe1d0">{{ r.who }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ screenO.tasks }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ detailO.closed }}" hint-placeholder-val="{{ true }}">
+          <div style="padding:12px 24px 0">
+            <h1 style="margin:0;font-family:Caprasimo,serif;font-weight:400;font-size:30px">할일 관리</h1>
+            <div style="margin-top:7px;font-size:13px;color:#82796a">방법·주기·영상 링크를 여기서 손봅니다</div>
+            <div style="margin-top:16px;display:flex;flex-direction:column;gap:16px;max-height:552px;overflow:auto">
+              <sc-for list="{{ groupsO }}" as="g" hint-placeholder-count="5">
+                <div>
+                  <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8c491a;font-weight:700">{{ g.name }}</div>
+                  <div style="margin-top:8px;display:flex;flex-direction:column;gap:7px">
+                    <sc-for list="{{ g.tasks }}" as="t" hint-placeholder-count="3">
+                      <div onClick="{{ t.openDetail }}" style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:28px;background:#ebddc5">
+                        <div style="flex:1;min-width:0">
+                          <div style="font-size:15px;font-weight:600">{{ t.label }}</div>
+                          <div style="font-size:12px;color:#82796a;margin-top:2px">{{ t.cycle }} · {{ t.who }}</div>
+                        </div>
+                        <span style="color:#a19786;font-weight:700">›</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ detailO.open }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:12px 24px 0">
+            <div onClick="{{ detailO.back }}" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#82796a">‹ {{ detailO.room }}</div>
+            <h1 style="margin:10px 0 0;font-family:Caprasimo,serif;font-weight:400;font-size:28px;line-height:1.15">{{ detailO.label }}</h1>
+            <div style="margin-top:12px;display:flex;gap:7px">
+              <span style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:999px;color:#56633f;background:#e1eecc">{{ detailO.who }}</span>
+              <span style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:999px;color:#8c491a;background:#ffe1d0">{{ detailO.cycle }}</span>
+            </div>
+
+            <div style="margin-top:22px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#82796a;font-weight:700">하는 방법</div>
+            <div style="margin-top:12px;display:flex;flex-direction:column;gap:11px">
+              <sc-for list="{{ detailO.steps }}" as="s" hint-placeholder-count="3">
+                <div style="display:flex;gap:12px;align-items:flex-start">
+                  <span style="flex:none;width:24px;height:24px;border-radius:999px;background:#e1eecc;color:#3d472b;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ s.n }}</span>
+                  <span style="font-size:15px;color:#474238;line-height:1.5;text-wrap:pretty">{{ s.text }}</span>
+                </div>
+              </sc-for>
+            </div>
+
+            <a href="{{ detailO.ytUrl }}" target="_blank" style="margin-top:22px;display:flex;align-items:center;gap:12px;padding:15px 16px;border-radius:28px;background:#ffe1d0">
+              <span style="width:34px;height:34px;border-radius:999px;background:#c67139;color:#fff2eb;display:flex;align-items:center;justify-content:center;font-size:13px;flex:none">▶</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14px;font-weight:700;color:#8c491a">{{ detailO.yt }}</div>
+                <div style="font-size:12px;color:#b2622d;margin-top:2px">유튜브에서 보기</div>
+              </div>
+            </a>
+
+            <div onClick="{{ detailO.toggle }}" style="margin-top:12px;cursor:pointer;text-align:center;padding:14px;border-radius:999px;background:{{ detailO.doneBg }};color:{{ detailO.doneColor }};font-size:15px;font-weight:700">{{ detailO.doneLabel }}</div>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <sc-if value="{{ screenO.log }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:12px 24px 0">
+          <h1 style="margin:0;font-family:Caprasimo,serif;font-weight:400;font-size:30px">기록</h1>
+          <div style="margin-top:7px;font-size:13px;color:#82796a">지난 4주 · 누가 더 했는지 조용히 세는 중</div>
+          <div style="margin-top:20px;display:flex;gap:11px">
+            <div style="flex:1;padding:18px;border-radius:28px;background:#ebddc5">
+              <div style="font-size:12px;font-weight:700;color:#645c50">나</div>
+              <div style="font-family:Caprasimo,serif;font-size:34px;margin-top:4px">58</div>
+              <div style="font-size:12px;color:#82796a">건 완료</div>
+            </div>
+            <div style="flex:1;padding:18px;border-radius:28px;background:#e1eecc">
+              <div style="font-size:12px;font-weight:700;color:#56633f">짝꿍</div>
+              <div style="font-family:Caprasimo,serif;font-size:34px;margin-top:4px;color:#3d472b">61</div>
+              <div style="font-size:12px;color:#56633f">건 완료 · 근소한 승</div>
+            </div>
+          </div>
+          <div style="margin-top:22px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#82796a;font-weight:700">방별 청결 유지율</div>
+          <div style="margin-top:13px;display:flex;flex-direction:column;gap:12px">
+            <sc-for list="{{ ratesO }}" as="s" hint-placeholder-count="6">
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:#645c50"><span>{{ s.name }}</span><span style="font-variant-numeric:tabular-nums">{{ s.pct }}%</span></div>
+                <div style="margin-top:6px;height:8px;border-radius:999px;background:#dcd3c4;overflow:hidden">
+                  <div style="height:100%;border-radius:999px;background:#c67139;width:{{ s.w }}"></div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <div style="position:absolute;left:14px;right:14px;bottom:14px;height:64px;border-radius:999px;background:#ebddc5;box-shadow:0 3px 10px rgba(46,43,37,.16);display:flex;align-items:center;justify-content:space-between;padding:0 6px;z-index:70">
+        <div onClick="{{ goO.home }}" style="flex:1;text-align:center;padding:10px 0;border-radius:999px;cursor:pointer;font-size:12px;font-weight:700;background:{{ screenO.homeBg }};color:{{ screenO.homeColor }}">평면도</div>
+        <div onClick="{{ goO.plan }}" style="flex:1.2;text-align:center;padding:10px 0;border-radius:999px;cursor:pointer;font-size:12px;font-weight:700;background:{{ screenO.planBg }};color:{{ screenO.planColor }}">오늘·일정</div>
+        <div onClick="{{ goO.tasks }}" style="flex:1;text-align:center;padding:10px 0;border-radius:999px;cursor:pointer;font-size:12px;font-weight:700;background:{{ screenO.tasksBg }};color:{{ screenO.tasksColor }}">할일</div>
+        <div onClick="{{ goO.log }}" style="flex:1;text-align:center;padding:10px 0;border-radius:999px;cursor:pointer;font-size:12px;font-weight:700;background:{{ screenO.logBg }};color:{{ screenO.logColor }}">기록</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1100,&quot;height&quot;:1000}}">
+function T(label, who, cycle, how, yt) { return { label: label, who: who, cycle: cycle, how: how, yt: yt }; }
+
+const DEFAULT_ROOMS = [
+  { id:'kveranda', name:'주방 배란다', x:26, y:0, w:36, h:8, z:2, fs:'10px', tasks:[
+    T('분리수거','짝꿍','주 2회',['플라스틱은 라벨 떼고 한 번 헹구기','종이 상자는 테이프·송장 제거','금·일 저녁에 한 번에 배출'],'분리수거 제대로 하는 법') ] },
+  { id:'kid', name:'아이방', x:0, y:8, w:26, h:30, z:2, fs:'12px', tasks:[
+    T('장난감 정리','짝꿍','매일',['바구니 3개로 종류별 분류','아이와 5분 타이머 걸고 같이','안 쓰는 건 상자에 격리 보관'],'아이방 장난감 수납'),
+    T('침구 정리','짝꿍','매일',['이불은 발끝부터 반듯하게','베개 털어 각 세우기','주 1회 커버 세탁'],'침구 정리 습관') ] },
+  { id:'kitchen', name:'주방', x:26, y:8, w:36, h:30, z:2, fs:'12px', tasks:[
+    T('설거지','나','매일',['기름기 없는 그릇부터 먼저','수세미는 주 1회 교체','마지막에 싱크볼까지 닦기'],'설거지 순서 팁'),
+    T('음식물 쓰레기','짝꿍','매일',['물기를 최대한 짜기','신문지로 한 번 감싸기','저녁 산책 나갈 때 같이'],'음식물 쓰레기 냄새 잡기'),
+    T('가스레인지 닦기','나','주 2회',['식은 뒤 베이킹소다 뿌리기','5분 두고 마른 천으로 밀기','틈새는 면봉으로 마무리'],'가스레인지 기름때 제거') ] },
+  { id:'myroom', name:'컴퓨터방', x:62, y:8, w:38, h:30, z:2, fs:'12px', tasks:[
+    T('책상 정리','나','매일',['책상 위 물건을 전부 내리기','자주 쓰는 것만 다시 올리기','서류는 트레이 한 곳에'],'책상 정리 루틴'),
+    T('케이블 정리','나','매달',['전원 뽑고 전부 분리','케이블 타이로 묶기','라벨 붙여 구분'],'책상 밑 케이블 정리') ] },
+  { id:'bath', name:'공용욕실', x:0, y:38, w:26, h:15, z:2, fs:'11px', tasks:[
+    T('변기 청소','짝꿍','주 1회',['세정제 뿌리고 5분 방치','솔로 테두리 안쪽부터','물내림 버튼·손잡이 소독'],'변기 청소하는 법'),
+    T('세면대 닦기','나','주 2회',['배수구 머리카락 먼저 제거','구연산수로 물때 녹이기','수전은 마른 천으로 광내기'],'세면대 물때 제거') ] },
+  { id:'living', name:'거실', x:26, y:38, w:74, h:50, z:1, fs:'13px', tasks:[
+    T('바닥 청소기','짝꿍','매일',['바닥 물건 먼저 치우기','창가에서 문 쪽으로 밀기','소파 밑은 3초 더'],'빠른 바닥 청소'),
+    T('소파 위 옷 치우기','나','매일',['입을 옷 / 빨래 두 더미로','빨래는 바로 세탁기로','5분 넘기지 않기'],'옷 쌓임 방지 정리'),
+    T('테이블 닦기','나','매일',['컵·리모컨 제자리로','물티슈 후 마른 천으로','컵받침 깔아두기'],'거실 테이블 정리') ] },
+  { id:'entry', name:'현관', x:78, y:38, w:22, h:14, z:3, fs:'10px', tasks:[
+    T('신발 정리','짝꿍','주 1회',['오늘 신은 것만 밖에 두기','나머지는 신발장 안으로','현관 바닥 물걸레'],'현관 신발 수납') ] },
+  { id:'master', name:'안방', x:0, y:53, w:26, h:35, z:1, fs:'12px', tasks:[
+    T('이불 정리','나','매일',['일어나자마자 걷어 환기','10분 뒤 반듯하게 펴기','주 1회 이불 털기'],'침대 정리 30초'),
+    T('옷 정리','짝꿍','주 1회',['의자 위 옷부터 처리','계절 아닌 옷은 상단칸','안 입는 옷 3벌 비우기'],'옷장 정리 방법') ] },
+  { id:'mbath', name:'안방욕실', x:0, y:53, w:15, h:13, z:3, fs:'9px', tasks:[
+    T('거울 닦기','나','주 1회',['물 스프레이 후 스퀴지','마른 극세사로 마무리','세면대 튄 자국까지'],'거울 얼룩 없이 닦기') ] },
+  { id:'lveranda', name:'거실 배란다', x:0, y:88, w:100, h:12, z:2, fs:'10px', tasks:[
+    T('빨래 개기','나','매일',['드라마 한 편 = 바구니 하나','옷장 칸별로 쌓기','갠 즉시 넣기'],'빨래 빨리 개는 법') ] }
+];
+
+const INITIAL_DONE = { 'kid:0':true, 'kid:1':true, 'mbath:0':true, 'entry:0':true, 'kitchen:1':true };
+const QUIPS = [
+  '지금 상태로 손님이 오면… 좀 곤란합니다.',
+  '거의 다 왔어요. 방 몇 개만 더 참으면 됩니다.',
+  '집이 반짝입니다. 이 상태로 액자에 넣고 싶네요.'
+];
+const WEEK = [['일',2,2],['월',3,1],['화',4,0],['수',5,3],['목',6,1],['금',7,2],['토',8,0]];
+const RATE_PCTS = [58, 48, 64, 35, 73, 82, 88, 91, 95, 70];
+
+function cloneRooms() {
+  return DEFAULT_ROOMS.map(r => Object.assign({}, r, { tasks: r.tasks.slice() }));
+}
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+class Component extends DCLogic {
+  state = {
+    roomsN: cloneRooms(), roomsO: cloneRooms(),
+    doneN: Object.assign({}, INITIAL_DONE), doneO: Object.assign({}, INITIAL_DONE),
+    openN: null, openO: null,
+    tabN: 'home', tabO: 'home',
+    planN: 'today', planO: 'today',
+    detN: null, detO: null,
+    editN: false, editO: false, selN: null, selO: null,
+    sparkN: null, sparkO: null
+  };
+
+  undone(done, room) {
+    let n = 0;
+    room.tasks.forEach((t, i) => { if (!done[room.id + ':' + i]) n++; });
+    return n;
+  }
+
+  patch(obj) { this.setState(obj); }
+
+  mutate(k, roomId, fn) {
+    const rooms = this.state['rooms' + k].map(r => (r.id === roomId ? Object.assign({}, r) : r));
+    const room = rooms.find(r => r.id === roomId);
+    if (room) fn(room);
+    const p = {}; p['rooms' + k] = rooms; this.patch(p);
+  }
+
+  toggleTask(k, roomId, i) {
+    const dk = 'done' + k, sk = 'spark' + k;
+    const done = Object.assign({}, this.state[dk]);
+    const key = roomId + ':' + i;
+    done[key] = !done[key];
+    const room = this.state['rooms' + k].find(r => r.id === roomId);
+    const nowClean = room && this.undone(done, room) === 0;
+    const p = {}; p[dk] = done;
+    if (nowClean) p[sk] = roomId;
+    this.patch(p);
+    if (nowClean) {
+      clearTimeout(this['_t' + k]);
+      this['_t' + k] = setTimeout(() => {
+        if (this.state[sk] === roomId) { const q = {}; q[sk] = null; this.patch(q); }
+      }, 950);
+    }
+  }
+
+  build(k, t) {
+    const S = this.state;
+    const rooms = S['rooms' + k], done = S['done' + k], open = S['open' + k];
+    const spark = S['spark' + k], tab = S['tab' + k], edit = S['edit' + k], sel = S['sel' + k];
+    const plan = S['plan' + k], det = S['det' + k];
+
+    const roomVals = rooms.map(r => {
+      const todo = this.undone(done, r);
+      const clean = todo === 0;
+      const selected = edit && sel === r.id;
+      return {
+        id: r.id, name: r.name, z: selected ? 9 : r.z, fs: r.fs,
+        left: r.x + '%', top: r.y + '%', w: r.w + '%', h: r.h + '%',
+        todo: todo, showBadge: !edit && todo > 0, showClean: !edit && clean,
+        isClean: clean, cleanOp: clean ? 1 : 0,
+        dust: clean ? 0 : Math.min(0.85, 0.3 + todo * 0.2),
+        labelColor: clean ? t.cleanLabel : t.dirtyLabel,
+        frame: selected ? t.frameSel : (edit ? t.frameEdit : t.frame),
+        sparking: spark === r.id,
+        tap: () => {
+          if (S['edit' + k]) { const p = {}; p['sel' + k] = r.id; this.patch(p); }
+          else { const p = {}; p['open' + k] = S['open' + k] === r.id ? null : r.id; this.patch(p); }
+        }
+      };
+    });
+
+    let total = 0, left = 0;
+    rooms.forEach(r => { total += r.tasks.length; left += this.undone(done, r); });
+    const doneCount = total - left;
+    const pct = total ? Math.round((doneCount / total) * 100) : 100;
+
+    const openDetail = (roomId, i) => () => {
+      const p = {}; p['det' + k] = roomId + ':' + i; p['tab' + k] = 'tasks'; p['open' + k] = null; this.patch(p);
+    };
+
+    const mkTask = (r, task, i) => {
+      const isDone = !!done[r.id + ':' + i];
+      return {
+        label: task.label, who: task.who, cycle: task.cycle, room: r.name,
+        mark: isDone ? '✓' : '',
+        boxBg: isDone ? t.checkBg : 'transparent',
+        boxBorder: isDone ? t.checkBg : t.checkBorder,
+        rowBg: isDone ? t.rowDoneBg : t.rowBg,
+        color: isDone ? t.textDim : t.text,
+        deco: isDone ? 'line-through' : 'none',
+        toggle: () => this.toggleTask(k, r.id, i),
+        openDetail: openDetail(r.id, i)
+      };
+    };
+
+    const openRoom = open ? rooms.find(r => r.id === open) : null;
+    let pop = { open: false, name: '', tasks: [], left: '0px', top: '0px', hint: '' };
+    if (openRoom && !edit) {
+      const cx = clamp(openRoom.x + openRoom.w / 2, 26, 74);
+      const below = openRoom.y + openRoom.h < 56;
+      const hgt = openRoom.tasks.length * 40 + 92;
+      const remain = this.undone(done, openRoom);
+      pop = {
+        open: true, name: openRoom.name,
+        left: 'calc(' + cx + '% - 116px)',
+        top: below ? 'calc(' + (openRoom.y + openRoom.h) + '% + 10px)' : 'calc(' + openRoom.y + '% - ' + hgt + 'px)',
+        hint: openRoom.tasks.length === 0 ? '아직 등록된 할 일이 없어요.' : remain === 0 ? '완벽합니다. 잠시 감상하세요.' : remain + '개 남았어요. ⓘ 를 누르면 방법이 나와요.',
+        close: () => { const p = {}; p['open' + k] = null; this.patch(p); },
+        tasks: openRoom.tasks.map((x, i) => mkTask(openRoom, x, i))
+      };
+    } else {
+      pop.close = () => {};
+    }
+
+    const todo = [];
+    const groups = [];
+    rooms.forEach(r => {
+      const list = r.tasks.map((x, i) => mkTask(r, x, i));
+      list.forEach(v => todo.push(v));
+      if (list.length) groups.push({ name: r.name, tasks: list });
+    });
+    todo.sort((a, b) => (a.deco === 'none' ? 0 : 1) - (b.deco === 'none' ? 0 : 1));
+
+    const routines = [];
+    rooms.forEach(r => r.tasks.forEach((x, i) => {
+      if (x.cycle !== '매일') routines.push({ label: x.label, cycle: x.cycle, who: x.who, room: r.name, openDetail: openDetail(r.id, i) });
+    }));
+
+    let detail = { open: false, closed: true, steps: [], back: () => {}, toggle: () => {} };
+    if (det) {
+      const parts = det.split(':');
+      const r = rooms.find(x => x.id === parts[0]);
+      const task = r && r.tasks[+parts[1]];
+      if (task) {
+        const isDone = !!done[det];
+        detail = {
+          open: true, closed: false,
+          room: r.name, label: task.label, who: task.who, cycle: task.cycle,
+          steps: task.how.map((h, i) => ({ n: i + 1, text: h })),
+          yt: task.yt,
+          ytUrl: 'https://www.youtube.com/results?search_query=' + encodeURIComponent(task.yt),
+          doneLabel: isDone ? '완료 취소' : '완료로 표시',
+          doneColor: isDone ? t.textDim : t.doneColor,
+          doneBorder: isDone ? t.checkBorder : t.doneBorderOn,
+          doneBg: isDone ? t.rowDoneBg : t.doneBgOn,
+          back: () => { const p = {}; p['det' + k] = null; this.patch(p); },
+          toggle: () => this.toggleTask(k, r.id, +parts[1])
+        };
+      }
+    }
+
+    const screen = { home: tab === 'home', plan: tab === 'plan', tasks: tab === 'tasks', log: tab === 'log' };
+    const go = {};
+    ['home', 'plan', 'tasks', 'log'].forEach(n => {
+      screen[n + 'Color'] = screen[n] ? t.tabOn : t.tabOff;
+      screen[n + 'Bg'] = screen[n] ? t.tabOnBg : 'transparent';
+      go[n] = () => { const p = {}; p['tab' + k] = n; if (n === 'tasks') p['det' + k] = S['det' + k]; this.patch(p); };
+    });
+
+    const selRoom = sel ? rooms.find(r => r.id === sel) : null;
+    const step = (dx, dy) => () => { if (selRoom) this.mutate(k, selRoom.id, r => { r.x = clamp(r.x + dx, 0, 100 - r.w); r.y = clamp(r.y + dy, 0, 100 - r.h); }); };
+    const size = (dw, dh) => () => { if (selRoom) this.mutate(k, selRoom.id, r => { r.w = clamp(r.w + dw, 8, 100 - r.x); r.h = clamp(r.h + dh, 6, 100 - r.y); }); };
+
+    const editVals = {
+      on: edit, off: !edit,
+      hasSel: edit && !!selRoom, noSel: edit && !selRoom,
+      kicker: edit ? '평면도 편집' : '8월 3일 일요일',
+      title: edit ? '우리집 평면도 고치기' : '우리집, 오늘은 좀 봐줄 만함',
+      btnLabel: edit ? '완료' : '평면도 편집',
+      btnColor: edit ? t.editOnColor : t.editOffColor,
+      btnBg: edit ? t.editOnBg : t.editOffBg,
+      btnBorder: edit ? t.editOnBorder : t.editOffBorder,
+      name: selRoom ? selRoom.name : '',
+      rename: e => { if (selRoom) { const v = e.target.value; this.mutate(k, selRoom.id, r => { r.name = v; }); } },
+      left: step(-2, 0), right: step(2, 0), up: step(0, -2), down: step(0, 2),
+      wider: size(2, 0), narrow: size(-2, 0), taller: size(0, 2), shorter: size(0, -2),
+      toggle: () => { const p = {}; p['edit' + k] = !edit; p['sel' + k] = null; p['open' + k] = null; this.patch(p); },
+      remove: () => {
+        if (!selRoom) return;
+        const p = {};
+        p['rooms' + k] = rooms.filter(r => r.id !== selRoom.id);
+        p['sel' + k] = null;
+        this.patch(p);
+      },
+      add: () => {
+        const id = 'room' + Date.now();
+        const p = {};
+        p['rooms' + k] = rooms.concat([{ id: id, name: '새 방', x: 34, y: 42, w: 24, h: 16, z: 5, fs: '11px', tasks: [] }]);
+        p['sel' + k] = id;
+        this.patch(p);
+      },
+      reset: () => { const p = {}; p['rooms' + k] = cloneRooms(); p['sel' + k] = null; this.patch(p); }
+    };
+
+    const planVals = {
+      title: plan === 'today' ? '오늘 할 일' : '이번 주',
+      isToday: plan === 'today', isWeek: plan === 'week',
+      goToday: () => { const p = {}; p['plan' + k] = 'today'; this.patch(p); },
+      goWeek: () => { const p = {}; p['plan' + k] = 'week'; this.patch(p); },
+      todayColor: plan === 'today' ? t.segOn : t.segOff,
+      weekColor: plan === 'week' ? t.segOn : t.segOff,
+      todayBg: plan === 'today' ? t.segOnBg : 'transparent',
+      weekBg: plan === 'week' ? t.segOnBg : 'transparent',
+      todayBorder: plan === 'today' ? t.segOnBorder : t.segOffBorder,
+      weekBorder: plan === 'week' ? t.segOnBorder : t.segOffBorder
+    };
+
+    return {
+      rooms: roomVals, pop: pop, todo: todo, groups: groups, routines: routines,
+      screen: screen, go: go, edit: editVals, plan: planVals, detail: detail,
+      stat: { done: doneCount, total: total, left: left, pctW: pct + '%', quip: QUIPS[pct >= 100 ? 2 : pct >= 55 ? 1 : 0] },
+      week: WEEK.map(d => ({
+        dow: d[0], num: d[1],
+        bg: d[1] === 3 ? t.dayOnBg : t.dayBg,
+        border: d[1] === 3 ? t.dayOnBorder : t.dayBorder,
+        numColor: d[1] === 3 ? t.dayOnText : t.text,
+        dot: d[2] === 0 ? 'transparent' : d[2] > 1 ? t.accent : t.accentSoft
+      })),
+      rates: rooms.slice(0, 6).map((r, i) => ({ name: r.name, pct: RATE_PCTS[i], w: RATE_PCTS[i] + '%' }))
+    };
+  }
+
+  renderVals() {
+    const n = this.build('N', {
+      text: '#e9e9ed', textDim: '#75798c', cleanLabel: '#d2cefd', dirtyLabel: '#b2b6ca',
+      checkBg: '#b5abfc', checkBorder: '#595d6c', rowBg: 'transparent', rowDoneBg: 'transparent',
+      frame: 'inset 0 0 0 1px #3f424d', frameEdit: 'inset 0 0 0 1px #595d6c', frameSel: 'inset 0 0 0 2px #b5abfc, 0 0 18px rgba(145,132,217,.45)',
+      tabOn: '#b5abfc', tabOff: '#75798c', tabOnBg: 'transparent',
+      segOn: '#d2cefd', segOff: '#9397ab', segOnBg: 'transparent', segOnBorder: '#5d5294', segOffBorder: '#3f424d',
+      editOnColor: '#161826', editOnBg: '#b5abfc', editOnBorder: '#b5abfc',
+      editOffColor: '#b5abfc', editOffBg: 'transparent', editOffBorder: '#5d5294',
+      doneColor: '#b5abfc', doneBorderOn: '#5d5294', doneBgOn: 'transparent',
+      dayBg: '#232532', dayBorder: '#3f424d', dayOnBg: '#2b2741', dayOnBorder: '#5d5294', dayOnText: '#d2cefd',
+      accent: '#9184d9', accentSoft: '#5d5294'
+    });
+    const o = this.build('O', {
+      text: '#201e1d', textDim: '#a19786', cleanLabel: '#3d472b', dirtyLabel: '#474238',
+      checkBg: '#c67139', checkBorder: '#c0b6a5', rowBg: '#ebddc5', rowDoneBg: '#eee7db',
+      frame: 'inset 0 0 0 2px #c0b6a5', frameEdit: 'inset 0 0 0 2px #a19786', frameSel: 'inset 0 0 0 3px #c67139',
+      tabOn: '#fff2eb', tabOff: '#645c50', tabOnBg: '#c67139',
+      segOn: '#fff2eb', segOff: '#645c50', segOnBg: '#c67139', segOnBorder: 'transparent', segOffBorder: 'transparent',
+      editOnColor: '#fff2eb', editOnBg: '#c67139', editOnBorder: 'transparent',
+      editOffColor: '#8c491a', editOffBg: '#ffe1d0', editOffBorder: 'transparent',
+      doneColor: '#fff2eb', doneBorderOn: 'transparent', doneBgOn: '#c67139',
+      dayBg: '#ebddc5', dayBorder: 'transparent', dayOnBg: '#c67139', dayOnBorder: 'transparent', dayOnText: '#fff2eb',
+      accent: '#c67139', accentSoft: '#aebf92'
+    });
+    return {
+      roomsN: n.rooms, popN: n.pop, todoN: n.todo, groupsN: n.groups, routinesN: n.routines,
+      screenN: n.screen, goN: n.go, editN: n.edit, planN: n.plan, detailN: n.detail,
+      statN: n.stat, weekN: n.week, ratesN: n.rates,
+      roomsO: o.rooms, popO: o.pop, todoO: o.todo, groupsO: o.groups, routinesO: o.routines,
+      screenO: o.screen, goO: o.go, editO: o.edit, planO: o.plan, detailO: o.detail,
+      statO: o.stat, weekO: o.week, ratesO: o.rates
+    };
+  }
+}
+
+</script>
+</body>
+</html>

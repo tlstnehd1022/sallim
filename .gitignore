@@ -1,5 +1,7 @@
 .gradle/
 build/
+.kotlin/
+.claude/worktrees/
 !gradle/wrapper/gradle-wrapper.jar
 .idea/
 *.iml
