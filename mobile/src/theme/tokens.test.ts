@@ -10,6 +10,7 @@ describe('getTokens', () => {
     expect(tokens.radius.sm).toBe(4);
     expect(tokens.radius.md).toBe(8);
     expect(tokens.radius.lg).toBe(14);
+    expect(tokens.layout.floorPlanHeight).toBe(404);
   });
 
   it('Organic 토큰은 확정값과 일치한다', () => {
@@ -23,5 +24,6 @@ describe('getTokens', () => {
     expect(tokens.radius.md).toBe(16);
     expect(tokens.radius.lg).toBe(28);
     expect(tokens.radius.pill).toBe(999);
+    expect(tokens.layout.floorPlanHeight).toBe(398);
   });
 });

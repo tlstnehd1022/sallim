@@ -13,7 +13,13 @@ export function SummaryStrip({ todayEventCount, monthlySpendManwon, message }: P
     <View
       style={[
         styles.strip,
-        { backgroundColor: tokens.color.surfaceDim, borderColor: tokens.color.border, borderRadius: tokens.radius.lg },
+        {
+          backgroundColor: tokens.color.surfaceDim,
+          borderColor: tokens.color.border,
+          borderRadius: tokens.radius.lg,
+          marginHorizontal: tokens.spacing.lg,
+          padding: tokens.spacing.md,
+        },
       ]}
     >
       <Text style={{ color: tokens.color.muted, fontSize: 13 }}>
@@ -28,9 +34,7 @@ export function SummaryStrip({ todayEventCount, monthlySpendManwon, message }: P
 
 const styles = StyleSheet.create({
   strip: {
-    marginHorizontal: 22,
     marginTop: 16,
-    padding: 14,
     borderWidth: 1,
   },
 });

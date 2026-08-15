@@ -25,21 +25,27 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: '홈',
-          tabBarIcon: ({ color, size }) => <Ionicons name="home" size={20} color={color} />,
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons name={focused ? 'home' : 'home-outline'} size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="calendar"
         options={{
           title: '캘린더',
-          tabBarIcon: ({ color }) => <Ionicons name="calendar-outline" size={20} color={color} />,
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons name={focused ? 'calendar' : 'calendar-outline'} size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="ledger"
         options={{
           title: '가계부',
-          tabBarIcon: ({ color }) => <Ionicons name="wallet-outline" size={20} color={color} />,
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons name={focused ? 'wallet' : 'wallet-outline'} size={size} color={color} />
+          ),
         }}
       />
     </Tabs>

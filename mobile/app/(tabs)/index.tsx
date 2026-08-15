@@ -13,7 +13,7 @@ export default function HomeScreen() {
         monthlySpendManwon={82}
         message="공용욕실이 3일째 조용히 삐져 있어. 오늘 5분만 쓰면 풀려."
       />
-      <FloorPlanCanvas rooms={DEFAULT_ROOMS} />
+      <FloorPlanCanvas rooms={DEFAULT_ROOMS} overdueByRoom={{ bath: { 0: 3 } }} />
     </ScrollView>
   );
 }

@@ -5,22 +5,31 @@ import { useTheme } from '../../theme/ThemeContext';
 
 interface Props {
   rooms: Room[];
+  overdueByRoom?: Record<string, Record<number, number>>;
 }
 
-export function FloorPlanCanvas({ rooms }: Props) {
-  const { tokens, theme } = useTheme();
-  const canvasHeight = theme === 'nocturne' ? 404 : 398;
+export function FloorPlanCanvas({ rooms, overdueByRoom }: Props) {
+  const { tokens } = useTheme();
 
   return (
     <View
       testID="floorplan-canvas"
       style={[
         styles.canvas,
-        { height: canvasHeight, backgroundColor: tokens.color.bg, marginHorizontal: 22, marginTop: 16 },
+        {
+          height: tokens.layout.floorPlanHeight,
+          backgroundColor: tokens.color.bg,
+          marginHorizontal: tokens.spacing.lg,
+          marginTop: 16,
+        },
       ]}
     >
       {rooms.map((room) => (
-        <RoomTile key={room.id} room={room} overdueDaysByChoreIndex={{}} />
+        <RoomTile
+          key={room.id}
+          room={room}
+          overdueDaysByChoreIndex={overdueByRoom?.[room.id] ?? {}}
+        />
       ))}
     </View>
   );

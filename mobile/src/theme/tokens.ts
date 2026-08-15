@@ -16,6 +16,7 @@ export interface ThemeTokens {
   };
   radius: { sm: number; md: number; lg: number; pill: number };
   spacing: { xs: number; sm: number; md: number; lg: number; xl: number };
+  layout: { floorPlanHeight: number };
   headingWeight: '500';
 }
 
@@ -34,6 +35,7 @@ const nocturne: ThemeTokens = {
   },
   radius: { sm: 4, md: 8, lg: 14, pill: 999 },
   spacing: { xs: 4, sm: 8, md: 14, lg: 22, xl: 32 },
+  layout: { floorPlanHeight: 404 },
   headingWeight: '500',
 };
 
@@ -53,6 +55,7 @@ const organic: ThemeTokens = {
   },
   radius: { sm: 8, md: 16, lg: 28, pill: 999 },
   spacing: { xs: 4, sm: 8, md: 14, lg: 22, xl: 32 },
+  layout: { floorPlanHeight: 398 },
   headingWeight: '500',
 };
 
