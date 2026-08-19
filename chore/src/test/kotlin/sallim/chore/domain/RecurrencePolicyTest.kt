@@ -24,6 +24,10 @@ class RecurrencePolicyTest : FunSpec({
         WeeklyNTimes(7).nextOccurrence(today) shouldBe today.plusDays(1)
     }
 
+    test("WeeklyNTimes(5)는 정수 나눗셈으로 1일 뒤를 반환한다 (근사치 한계)") {
+        WeeklyNTimes(5).nextOccurrence(today) shouldBe today.plusDays(1)
+    }
+
     test("Monthly는 한 달 뒤를 반환한다") {
         Monthly.nextOccurrence(today) shouldBe today.plusMonths(1)
     }
