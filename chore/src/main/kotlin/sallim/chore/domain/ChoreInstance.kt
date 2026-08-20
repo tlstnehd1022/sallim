@@ -44,5 +44,22 @@ class ChoreInstance private constructor(
                 completedBy = null,
                 completedAt = null
             )
+
+        fun reconstitute(
+            id: ChoreInstanceId,
+            choreDefinitionId: ChoreDefinitionId,
+            scheduledDate: LocalDate,
+            completed: Boolean,
+            completedBy: MemberId?,
+            completedAt: Instant?
+        ): ChoreInstance =
+            ChoreInstance(
+                id = id,
+                choreDefinitionId = choreDefinitionId,
+                scheduledDate = scheduledDate,
+                completed = completed,
+                completedBy = completedBy,
+                completedAt = completedAt
+            )
     }
 }

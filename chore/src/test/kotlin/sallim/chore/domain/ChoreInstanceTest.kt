@@ -3,6 +3,7 @@ package sallim.chore.domain
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import java.time.Instant
 import java.time.LocalDate
 
 class ChoreInstanceTest : FunSpec({
@@ -39,5 +40,24 @@ class ChoreInstanceTest : FunSpec({
         io.kotest.assertions.throwables.shouldThrow<IllegalStateException> {
             instance.complete(MemberId.generate())
         }
+    }
+
+    test("reconstitute는 저장된 상태를 그대로 복원하고 이벤트를 발행하지 않는다") {
+        val memberId = MemberId.generate()
+        val completedAt = Instant.now()
+
+        val instance = ChoreInstance.reconstitute(
+            id = ChoreInstanceId.generate(),
+            choreDefinitionId = choreDefinitionId,
+            scheduledDate = scheduledDate,
+            completed = true,
+            completedBy = memberId,
+            completedAt = completedAt
+        )
+
+        instance.completed shouldBe true
+        instance.completedBy shouldBe memberId
+        instance.completedAt shouldBe completedAt
+        instance.domainEvents shouldHaveSize 0
     }
 })
