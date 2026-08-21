@@ -16,12 +16,11 @@ dependencies {
     implementation(project(":common"))
     implementation(libs.kotlin.reflect)
     implementation(libs.spring.boot.starter.data.jpa)
-    implementation(libs.flyway.core)
+    runtimeOnly(libs.flyway.core)
     runtimeOnly(libs.flyway.mysql)
     runtimeOnly(libs.mysql.connector.j)
 
     testImplementation(libs.spring.boot.starter.test)
-    testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
     testImplementation(libs.testcontainers.junit.jupiter)
     testImplementation(libs.testcontainers.mysql)
 }

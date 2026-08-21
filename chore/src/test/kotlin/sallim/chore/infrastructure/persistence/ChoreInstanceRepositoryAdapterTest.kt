@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.context.annotation.Import
 import sallim.chore.domain.ChoreDefinitionId
 import sallim.chore.domain.ChoreInstance
@@ -22,11 +23,16 @@ class ChoreInstanceRepositoryAdapterTest : AbstractMySqlIntegrationTest() {
     @Autowired
     lateinit var adapter: ChoreInstanceRepositoryAdapter
 
+    @Autowired
+    lateinit var em: TestEntityManager
+
     @Test
     fun `미완료 인스턴스를 저장하고 다시 읽으면 값이 같다`() {
         val instance = ChoreInstance.schedule(ChoreDefinitionId.generate(), LocalDate.of(2026, 8, 20))
 
         adapter.save(instance)
+        em.flush()
+        em.clear()
         val found = adapter.findById(instance.id)
 
         found.shouldNotBeNull()
@@ -45,6 +51,8 @@ class ChoreInstanceRepositoryAdapterTest : AbstractMySqlIntegrationTest() {
         instance.complete(member)
 
         adapter.save(instance)
+        em.flush()
+        em.clear()
         val found = adapter.findById(instance.id)
 
         found.shouldNotBeNull()

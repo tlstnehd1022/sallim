@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.context.annotation.Import
 import sallim.chore.domain.ChoreDefinition
 import sallim.chore.domain.ChoreDefinitionId
@@ -22,6 +23,9 @@ class ChoreDefinitionRepositoryAdapterTest : AbstractMySqlIntegrationTest() {
 
     @Autowired
     lateinit var adapter: ChoreDefinitionRepositoryAdapter
+
+    @Autowired
+    lateinit var em: TestEntityManager
 
     private fun choreDefinition(
         recurrence: RecurrencePolicy = Daily,
@@ -45,6 +49,8 @@ class ChoreDefinitionRepositoryAdapterTest : AbstractMySqlIntegrationTest() {
         adapter.save(daily)
         adapter.save(weekly)
         adapter.save(monthly)
+        em.flush()
+        em.clear()
 
         val found = adapter.findAll().associateBy { it.id }
         found[daily.id]!!.recurrence shouldBe Daily
@@ -57,6 +63,8 @@ class ChoreDefinitionRepositoryAdapterTest : AbstractMySqlIntegrationTest() {
         val definition = choreDefinition(steps = listOf("첫번째", "두번째", "세번째"))
 
         adapter.save(definition)
+        em.flush()
+        em.clear()
 
         val found = adapter.findAll().first { it.id == definition.id }
         found.howToSteps shouldBe listOf("첫번째", "두번째", "세번째")

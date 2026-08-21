@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.context.annotation.Import
 import sallim.chore.domain.FloorPlan
 import sallim.chore.domain.Room
@@ -20,12 +21,17 @@ class RoomRepositoryAdapterTest : AbstractMySqlIntegrationTest() {
     @Autowired
     lateinit var adapter: RoomRepositoryAdapter
 
+    @Autowired
+    lateinit var em: TestEntityManager
+
     @Test
     fun `저장한 방과 배치를 다시 읽으면 값이 같다`() {
         val room = Room(RoomId.generate(), "거실")
         val placement = RoomPlacement(room.id, x = 26, y = 38, w = 74, h = 50, z = 1)
 
         adapter.save(room, placement)
+        em.flush()
+        em.clear()
 
         val found = adapter.findAll()
         found shouldHaveSize 1
@@ -44,6 +50,8 @@ class RoomRepositoryAdapterTest : AbstractMySqlIntegrationTest() {
 
         adapter.save(living, livingPlacement)
         adapter.save(kitchen, kitchenPlacement)
+        em.flush()
+        em.clear()
 
         val placements = adapter.findAll().map { it.second }
         val floorPlan = FloorPlan.of(placements)
