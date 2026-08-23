@@ -27,6 +27,8 @@ dependencies {
     implementation(project(":common"))
     implementation(libs.kotlin.reflect)
     implementation(libs.spring.boot.starter.data.jpa)
+    implementation(libs.spring.boot.starter.web)
+    implementation(libs.jackson.module.kotlin)
     runtimeOnly(libs.flyway.core)
     runtimeOnly(libs.flyway.mysql)
     runtimeOnly(libs.mysql.connector.j)
