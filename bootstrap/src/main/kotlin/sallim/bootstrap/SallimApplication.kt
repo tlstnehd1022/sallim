@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.runApplication
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
-// ponytail: @SpringBootApplication's scanBasePackages only extends @ComponentScan — it does not
+// @SpringBootApplication's scanBasePackages only extends @ComponentScan — it does not
 // move where @EnableAutoConfiguration registers its "auto-configuration base package"
 // (AutoConfigurationPackages), which JpaRepositoriesAutoConfiguration/entity scanning use and which
 // otherwise defaults to this class's own package (sallim.bootstrap). chore's JPA repositories/entities

@@ -1,5 +1,3 @@
-import org.springframework.boot.gradle.plugin.SpringBootPlugin
-
 plugins {
     alias(libs.plugins.kotlin.spring)
     alias(libs.plugins.spring.boot)
@@ -14,6 +12,8 @@ dependencyManagement {
             entry("testcontainers")
             entry("junit-jupiter")
             entry("mysql")
+            entry("jdbc")
+            entry("database-commons")
         }
     }
 }
