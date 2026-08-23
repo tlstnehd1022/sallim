@@ -30,6 +30,13 @@ class ChoreInstanceRepositoryAdapter(
     override fun findById(id: ChoreInstanceId): ChoreInstance? =
         jpaRepository.findById(id.value.toString()).map { it.toDomain() }.orElse(null)
 
+    override fun findAll(): List<ChoreInstance> =
+        jpaRepository.findAll().map { it.toDomain() }
+
+    override fun deleteById(id: ChoreInstanceId) {
+        jpaRepository.deleteById(id.value.toString())
+    }
+
     private fun ChoreInstanceEntity.toDomain(): ChoreInstance = ChoreInstance.reconstitute(
         id = ChoreInstanceId(UUID.fromString(id)),
         choreDefinitionId = ChoreDefinitionId(UUID.fromString(choreDefinitionId)),

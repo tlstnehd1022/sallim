@@ -1,5 +1,7 @@
 package sallim.chore.infrastructure.persistence
 
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -68,5 +70,38 @@ class ChoreDefinitionRepositoryAdapterTest : AbstractMySqlIntegrationTest() {
 
         val found = adapter.findAll().first { it.id == definition.id }
         found.howToSteps shouldBe listOf("첫번째", "두번째", "세번째")
+    }
+
+    @Test
+    fun `저장한 정의를 id로 조회하면 값이 같다`() {
+        val definition = choreDefinition()
+        adapter.save(definition)
+        em.flush()
+        em.clear()
+
+        val found = adapter.findById(definition.id)
+
+        found.shouldNotBeNull()
+        found.id shouldBe definition.id
+        found.label shouldBe definition.label
+    }
+
+    @Test
+    fun `존재하지 않는 id로 조회하면 null을 반환한다`() {
+        adapter.findById(ChoreDefinitionId.generate()) shouldBe null
+    }
+
+    @Test
+    fun `삭제하면 findAll에서 사라진다`() {
+        val definition = choreDefinition()
+        adapter.save(definition)
+        em.flush()
+        em.clear()
+
+        adapter.deleteById(definition.id)
+        em.flush()
+        em.clear()
+
+        adapter.findAll() shouldHaveSize 0
     }
 }

@@ -37,6 +37,13 @@ class ChoreDefinitionRepositoryAdapter(
     override fun findAll(): List<ChoreDefinition> =
         jpaRepository.findAll().map { it.toDomain() }
 
+    override fun findById(id: ChoreDefinitionId): ChoreDefinition? =
+        jpaRepository.findById(id.value.toString()).map { it.toDomain() }.orElse(null)
+
+    override fun deleteById(id: ChoreDefinitionId) {
+        jpaRepository.deleteById(id.value.toString())
+    }
+
     private fun ChoreDefinitionEntity.toDomain(): ChoreDefinition = ChoreDefinition(
         id = ChoreDefinitionId(UUID.fromString(id)),
         roomId = RoomId(UUID.fromString(roomId)),

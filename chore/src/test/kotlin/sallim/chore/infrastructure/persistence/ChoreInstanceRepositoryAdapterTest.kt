@@ -1,6 +1,7 @@
 package sallim.chore.infrastructure.persistence
 
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -59,5 +60,31 @@ class ChoreInstanceRepositoryAdapterTest : AbstractMySqlIntegrationTest() {
         found.completedBy shouldBe member
         found.completedAt shouldBe instance.completedAt
         found.domainEvents.shouldBeEmpty()
+    }
+
+    @Test
+    fun `여러 인스턴스를 저장하면 findAll로 전부 조회된다`() {
+        val a = ChoreInstance.schedule(ChoreDefinitionId.generate(), LocalDate.of(2026, 8, 20))
+        val b = ChoreInstance.schedule(ChoreDefinitionId.generate(), LocalDate.of(2026, 8, 21))
+        adapter.save(a)
+        adapter.save(b)
+        em.flush()
+        em.clear()
+
+        adapter.findAll() shouldHaveSize 2
+    }
+
+    @Test
+    fun `삭제하면 findAll에서 사라진다`() {
+        val instance = ChoreInstance.schedule(ChoreDefinitionId.generate(), LocalDate.of(2026, 8, 20))
+        adapter.save(instance)
+        em.flush()
+        em.clear()
+
+        adapter.deleteById(instance.id)
+        em.flush()
+        em.clear()
+
+        adapter.findAll() shouldHaveSize 0
     }
 }

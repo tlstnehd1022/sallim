@@ -1,6 +1,7 @@
 package sallim.chore.infrastructure.persistence
 
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -56,5 +57,40 @@ class RoomRepositoryAdapterTest : AbstractMySqlIntegrationTest() {
         val placements = adapter.findAll().map { it.second }
         val floorPlan = FloorPlan.of(placements)
         floorPlan.placements shouldHaveSize 2
+    }
+
+    @Test
+    fun `저장한 방을 id로 조회하면 값이 같다`() {
+        val room = Room(RoomId.generate(), "거실")
+        val placement = RoomPlacement(room.id, x = 26, y = 38, w = 74, h = 50, z = 1)
+        adapter.save(room, placement)
+        em.flush()
+        em.clear()
+
+        val found = adapter.findById(room.id)
+
+        found.shouldNotBeNull()
+        found.first.id shouldBe room.id
+        found.second shouldBe placement
+    }
+
+    @Test
+    fun `존재하지 않는 id로 조회하면 null을 반환한다`() {
+        adapter.findById(RoomId.generate()) shouldBe null
+    }
+
+    @Test
+    fun `삭제하면 findAll에서 사라진다`() {
+        val room = Room(RoomId.generate(), "거실")
+        val placement = RoomPlacement(room.id, x = 26, y = 38, w = 74, h = 50, z = 1)
+        adapter.save(room, placement)
+        em.flush()
+        em.clear()
+
+        adapter.deleteById(room.id)
+        em.flush()
+        em.clear()
+
+        adapter.findAll() shouldHaveSize 0
     }
 }
