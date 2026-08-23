@@ -1,6 +1,7 @@
 package sallim.chore.application
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import sallim.chore.domain.ChoreDefinitionRepository
 import sallim.chore.domain.ChoreInstanceRepository
 import sallim.chore.domain.FloorPlan
@@ -15,8 +16,10 @@ class RoomService(
     private val choreDefinitionRepository: ChoreDefinitionRepository,
     private val choreInstanceRepository: ChoreInstanceRepository
 ) {
+    @Transactional(readOnly = true)
     fun list(): List<Pair<Room, RoomPlacement>> = roomRepository.findAll()
 
+    @Transactional
     fun create(name: String, x: Int, y: Int, w: Int, h: Int, z: Int): Room {
         val room = Room(RoomId.generate(), name)
         val placement = RoomPlacement(room.id, x, y, w, h, z)
@@ -24,6 +27,7 @@ class RoomService(
         return roomRepository.save(room, placement)
     }
 
+    @Transactional
     fun update(id: RoomId, name: String, x: Int, y: Int, w: Int, h: Int, z: Int): Room {
         roomRepository.findById(id) ?: throw NotFoundException("room not found: $id")
         val room = Room(id, name)
@@ -32,6 +36,7 @@ class RoomService(
         return roomRepository.save(room, placement)
     }
 
+    @Transactional
     fun delete(id: RoomId) {
         roomRepository.findById(id) ?: throw NotFoundException("room not found: $id")
         val definitionIds = choreDefinitionRepository.findAll()

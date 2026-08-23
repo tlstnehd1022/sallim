@@ -1,6 +1,7 @@
 package sallim.chore.application
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import sallim.chore.domain.CleanlinessScore
 import sallim.chore.domain.ChoreDefinitionRepository
 import sallim.chore.domain.ChoreInstanceRepository
@@ -14,6 +15,7 @@ class CleanlinessService(
     private val choreDefinitionRepository: ChoreDefinitionRepository,
     private val choreInstanceRepository: ChoreInstanceRepository
 ) {
+    @Transactional(readOnly = true)
     fun scoresForAllRooms(referenceDate: LocalDate = LocalDate.now()): List<RoomCleanliness> {
         val definitionsByRoom = choreDefinitionRepository.findAll().groupBy { it.roomId }
         val instancesByDefinition = choreInstanceRepository.findAll().groupBy { it.choreDefinitionId }

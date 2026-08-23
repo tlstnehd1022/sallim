@@ -28,18 +28,17 @@ class RoomRepositoryAdapter(
     }
 
     override fun findAll(): List<Pair<Room, RoomPlacement>> =
-        jpaRepository.findAll().map { entity ->
-            val roomId = RoomId(UUID.fromString(entity.id))
-            Room(roomId, entity.name) to RoomPlacement(roomId, entity.x, entity.y, entity.w, entity.h, entity.z)
-        }
+        jpaRepository.findAll().map { it.toDomain() }
 
     override fun findById(id: RoomId): Pair<Room, RoomPlacement>? =
-        jpaRepository.findById(id.value.toString()).map { entity ->
-            val roomId = RoomId(UUID.fromString(entity.id))
-            Room(roomId, entity.name) to RoomPlacement(roomId, entity.x, entity.y, entity.w, entity.h, entity.z)
-        }.orElse(null)
+        jpaRepository.findById(id.value.toString()).map { it.toDomain() }.orElse(null)
 
     override fun deleteById(id: RoomId) {
         jpaRepository.deleteById(id.value.toString())
+    }
+
+    private fun RoomEntity.toDomain(): Pair<Room, RoomPlacement> {
+        val roomId = RoomId(UUID.fromString(id))
+        return Room(roomId, name) to RoomPlacement(roomId, x, y, w, h, z)
     }
 }

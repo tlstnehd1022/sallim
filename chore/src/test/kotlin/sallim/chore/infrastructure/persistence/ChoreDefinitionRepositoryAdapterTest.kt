@@ -104,4 +104,31 @@ class ChoreDefinitionRepositoryAdapterTest : AbstractMySqlIntegrationTest() {
 
         adapter.findAll() shouldHaveSize 0
     }
+
+    @Test
+    fun `같은 id로 다시 저장하면 howToSteps 목록 길이가 바뀌어도 갱신된다`() {
+        val definition = choreDefinition(steps = listOf("첫번째", "두번째", "세번째"))
+        adapter.save(definition)
+        em.flush()
+        em.clear()
+
+        val updated = ChoreDefinition(
+            id = definition.id,
+            roomId = definition.roomId,
+            label = "설거지-수정",
+            assigneeId = definition.assigneeId,
+            recurrence = WeeklyNTimes(3),
+            howToSteps = listOf("한 단계만"),
+            videoQuery = "새 영상"
+        )
+        adapter.save(updated)
+        em.flush()
+        em.clear()
+
+        val found = adapter.findById(definition.id)
+        found.shouldNotBeNull()
+        found.label shouldBe "설거지-수정"
+        found.recurrence shouldBe WeeklyNTimes(3)
+        found.howToSteps shouldBe listOf("한 단계만")
+    }
 }

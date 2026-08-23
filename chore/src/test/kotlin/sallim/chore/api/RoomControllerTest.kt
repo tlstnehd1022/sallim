@@ -21,7 +21,7 @@ import sallim.chore.application.FakeRoomRepository
 import sallim.chore.application.RoomService
 
 @WebMvcTest(RoomController::class)
-@Import(RoomControllerTest.TestConfig::class, ApiExceptionHandler::class)
+@Import(RoomControllerTest.TestConfig::class)
 class RoomControllerTest {
 
     @org.springframework.boot.test.context.TestConfiguration

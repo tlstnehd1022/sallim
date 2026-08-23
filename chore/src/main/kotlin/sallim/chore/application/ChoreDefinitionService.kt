@@ -1,6 +1,7 @@
 package sallim.chore.application
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import sallim.chore.domain.ChoreDefinition
 import sallim.chore.domain.ChoreDefinitionId
 import sallim.chore.domain.ChoreDefinitionRepository
@@ -16,8 +17,10 @@ class ChoreDefinitionService(
     private val roomRepository: RoomRepository,
     private val choreInstanceRepository: ChoreInstanceRepository
 ) {
+    @Transactional(readOnly = true)
     fun list(): List<ChoreDefinition> = choreDefinitionRepository.findAll()
 
+    @Transactional
     fun create(
         label: String, roomId: RoomId, assigneeId: MemberId,
         recurrence: RecurrencePolicy, howToSteps: List<String>, videoQuery: String
@@ -29,6 +32,7 @@ class ChoreDefinitionService(
         return choreDefinitionRepository.save(definition)
     }
 
+    @Transactional
     fun update(
         id: ChoreDefinitionId, label: String, roomId: RoomId, assigneeId: MemberId,
         recurrence: RecurrencePolicy, howToSteps: List<String>, videoQuery: String
@@ -39,6 +43,7 @@ class ChoreDefinitionService(
         return choreDefinitionRepository.save(definition)
     }
 
+    @Transactional
     fun delete(id: ChoreDefinitionId) {
         choreDefinitionRepository.findById(id) ?: throw NotFoundException("chore definition not found: $id")
         choreInstanceRepository.findAll()

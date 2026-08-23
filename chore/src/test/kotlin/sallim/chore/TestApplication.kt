@@ -1,4 +1,4 @@
-package sallim.chore.api
+package sallim.chore
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 
