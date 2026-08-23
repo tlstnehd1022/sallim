@@ -13,7 +13,6 @@ import sallim.chore.domain.ChoreDefinitionId
 import sallim.chore.domain.ChoreInstance
 import sallim.chore.domain.MemberId
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -58,7 +57,7 @@ class ChoreInstanceRepositoryAdapterTest : AbstractMySqlIntegrationTest() {
         found.shouldNotBeNull()
         found.completed shouldBe true
         found.completedBy shouldBe member
-        found.completedAt shouldBe instance.completedAt!!.truncatedTo(ChronoUnit.MICROS)
+        found.completedAt shouldBe instance.completedAt
         found.domainEvents.shouldBeEmpty()
     }
 }

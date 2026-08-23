@@ -3,6 +3,7 @@ package sallim.chore.domain
 import sallim.common.domain.AggregateRoot
 import java.time.Instant
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 class ChoreInstance private constructor(
     override val id: ChoreInstanceId,
@@ -24,7 +25,8 @@ class ChoreInstance private constructor(
         check(!completed) { "chore instance already completed" }
         completed = true
         completedBy = memberId
-        completedAt = Instant.now()
+        // MySQL DATETIME(6)은 마이크로초까지만 저장 — 미리 잘라둬야 저장 후 재조회 시 값이 정확히 같다.
+        completedAt = Instant.now().truncatedTo(ChronoUnit.MICROS)
         registerEvent(
             ChoreCompletedEvent(
                 choreInstanceId = id,

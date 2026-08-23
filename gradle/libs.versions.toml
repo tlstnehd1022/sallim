@@ -3,13 +3,17 @@ kotlin = "2.0.20"
 spring-boot = "3.3.4"
 spring-dependency-management = "1.1.6"
 kotest = "5.9.1"
+testcontainers = "1.21.4"
 
 # spring-boot-starter*, kotlin-reflect, spring-boot-starter-data-jpa, mysql-connector-j,
-# flyway-core, flyway-mysql, testcontainers-junit-jupiter, testcontainers-mysql: 버전 없음 —
+# flyway-core, flyway-mysql: 버전 없음 —
 # Spring Boot BOM으로 해석. bootstrap은 org.springframework.boot 플러그인이 BOM을 자동
 # 임포트하고, chore처럼 그 플러그인 없이 io.spring.dependency-management만 적용하는 모듈은
 # dependencyManagement { imports { mavenBom(SpringBootPlugin.BOM_COORDINATES) } }로 직접
 # 임포트한다. 둘 중 하나도 없는 모듈에서 이 라이브러리를 쓰면 버전 해석에 실패한다.
+# testcontainers-junit-jupiter/testcontainers-mysql은 Spring Boot 3.3.4 BOM이 관리하는
+# 1.19.8이 로컬 Docker Desktop(신버전 API)과 "client version too old" 충돌을 일으켜
+# 명시적으로 최신으로 고정 — BOM 권장값보다 명시 버전이 우선 적용된다.
 [libraries]
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }
@@ -18,8 +22,8 @@ spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-
 mysql-connector-j = { module = "com.mysql:mysql-connector-j" }
 flyway-core = { module = "org.flywaydb:flyway-core" }
 flyway-mysql = { module = "org.flywaydb:flyway-mysql" }
-testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter" }
-testcontainers-mysql = { module = "org.testcontainers:mysql" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+testcontainers-mysql = { module = "org.testcontainers:mysql", version.ref = "testcontainers" }
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 

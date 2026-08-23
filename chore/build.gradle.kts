@@ -10,6 +10,17 @@ dependencyManagement {
     imports {
         mavenBom(SpringBootPlugin.BOM_COORDINATES)
     }
+    // Spring Boot 3.3.4가 관리하는 testcontainers 1.19.8은 최신 로컬 Docker 엔진과
+    // "client version too old" 충돌이 나서 libs.versions.toml의 명시 버전으로 오버라이드.
+    dependencies {
+        dependencySet("org.testcontainers:${libs.versions.testcontainers.get()}") {
+            entry("testcontainers")
+            entry("junit-jupiter")
+            entry("mysql")
+            entry("jdbc")
+            entry("database-commons")
+        }
+    }
 }
 
 dependencies {
