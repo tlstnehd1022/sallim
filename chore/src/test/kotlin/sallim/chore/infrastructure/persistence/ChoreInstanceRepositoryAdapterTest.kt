@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.dao.DataIntegrityViolationException
 import sallim.chore.domain.ChoreDefinitionId
 import sallim.chore.domain.ChoreInstance
+import sallim.chore.domain.ChoreInstanceId
 import sallim.chore.domain.MemberId
 import java.time.LocalDate
 
@@ -27,6 +28,9 @@ class ChoreInstanceRepositoryAdapterTest : AbstractMySqlIntegrationTest() {
 
     @Autowired
     lateinit var em: TestEntityManager
+
+    @Autowired
+    lateinit var jpaRepository: ChoreInstanceJpaRepository
 
     @Test
     fun `미완료 인스턴스를 저장하고 다시 읽으면 값이 같다`() {
@@ -96,10 +100,19 @@ class ChoreInstanceRepositoryAdapterTest : AbstractMySqlIntegrationTest() {
         val date = LocalDate.of(2026, 8, 20)
         adapter.save(ChoreInstance.schedule(definitionId, date))
         em.flush()
+        em.clear()
 
         shouldThrow<DataIntegrityViolationException> {
-            adapter.save(ChoreInstance.schedule(definitionId, date))
-            em.flush()
+            jpaRepository.saveAndFlush(
+                ChoreInstanceEntity(
+                    id = ChoreInstanceId.generate().value.toString(),
+                    choreDefinitionId = definitionId.value.toString(),
+                    scheduledDate = date,
+                    completed = false,
+                    completedBy = null,
+                    completedAt = null
+                )
+            )
         }
     }
 }

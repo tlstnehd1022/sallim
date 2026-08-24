@@ -91,7 +91,7 @@ class ChoreInstanceServiceTest : FunSpec({
         val instances = FakeChoreInstanceRepository()
         val service = ChoreInstanceService(instances)
         val definition = choreDefinition(Monthly)
-        val today = LocalDate.now()
+        val today = LocalDate.of(2026, 6, 15)
         instances.save(ChoreInstance.schedule(definition.id, today.minusMonths(2)))
 
         val created = service.generateDueInstances(listOf(definition), today)

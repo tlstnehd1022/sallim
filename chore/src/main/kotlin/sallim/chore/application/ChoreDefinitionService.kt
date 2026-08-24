@@ -12,6 +12,7 @@ import sallim.chore.domain.RecurrencePolicy
 import sallim.chore.domain.RoomId
 import sallim.chore.domain.RoomRepository
 import java.time.LocalDate
+import java.time.ZoneId
 
 @Service
 class ChoreDefinitionService(
@@ -33,7 +34,7 @@ class ChoreDefinitionService(
                 ChoreDefinitionId.generate(), roomId, label, assigneeId, recurrence, howToSteps, videoQuery
             )
         )
-        choreInstanceRepository.save(ChoreInstance.schedule(definition.id, LocalDate.now()))
+        choreInstanceRepository.save(ChoreInstance.schedule(definition.id, LocalDate.now(ZoneId.of("Asia/Seoul"))))
         return definition
     }
 
