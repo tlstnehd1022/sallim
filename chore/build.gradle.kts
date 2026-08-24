@@ -19,6 +19,7 @@ dependencyManagement {
             entry("mysql")
             entry("jdbc")
             entry("database-commons")
+            entry("kafka")
         }
     }
 }
@@ -28,6 +29,7 @@ dependencies {
     implementation(libs.kotlin.reflect)
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.boot.starter.web)
+    implementation(libs.spring.kafka)
     implementation(libs.jackson.module.kotlin)
     runtimeOnly(libs.flyway.core)
     runtimeOnly(libs.flyway.mysql)
@@ -36,4 +38,5 @@ dependencies {
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.testcontainers.junit.jupiter)
     testImplementation(libs.testcontainers.mysql)
+    testImplementation(libs.testcontainers.kafka)
 }
