@@ -63,4 +63,17 @@ class ChoreDefinitionServiceTest : FunSpec({
         service.list() shouldHaveSize 0
         instances.findAll() shouldHaveSize 0
     }
+
+    test("생성 시 오늘 날짜 인스턴스가 함께 생성된다") {
+        val (service, rooms, defAndInst) = newService()
+        val (_, instances) = defAndInst
+        val roomService = RoomService(rooms, FakeChoreDefinitionRepository(), FakeChoreInstanceRepository())
+        val room = roomService.create("거실", 26, 38, 74, 50, 1)
+
+        val definition = service.create("청소", room.id, MemberId.generate(), Daily, listOf("단계1"), "영상")
+
+        val created = instances.findAll().filter { it.choreDefinitionId == definition.id }
+        created shouldHaveSize 1
+        created.first().scheduledDate shouldBe LocalDate.now()
+    }
 })
