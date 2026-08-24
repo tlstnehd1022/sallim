@@ -1,5 +1,6 @@
 package sallim.chore.infrastructure.persistence
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -10,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.context.annotation.Import
+import org.springframework.dao.DataIntegrityViolationException
 import sallim.chore.domain.ChoreDefinitionId
 import sallim.chore.domain.ChoreInstance
 import sallim.chore.domain.MemberId
@@ -86,5 +88,18 @@ class ChoreInstanceRepositoryAdapterTest : AbstractMySqlIntegrationTest() {
         em.clear()
 
         adapter.findAll() shouldHaveSize 0
+    }
+
+    @Test
+    fun `같은 정의와 날짜로 두 번 저장하면 유니크 제약 위반 예외가 난다`() {
+        val definitionId = ChoreDefinitionId.generate()
+        val date = LocalDate.of(2026, 8, 20)
+        adapter.save(ChoreInstance.schedule(definitionId, date))
+        em.flush()
+
+        shouldThrow<DataIntegrityViolationException> {
+            adapter.save(ChoreInstance.schedule(definitionId, date))
+            em.flush()
+        }
     }
 }
