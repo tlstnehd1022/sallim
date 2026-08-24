@@ -24,3 +24,7 @@ Kotlin(JDK 21) · Spring Boot 3.x · JPA + QueryDSL · MySQL · Redis · Kafka �
 
 - 전체 기획: `sallim-master-spec.md`
 - 설계 스펙(서브프로젝트 단위): `docs/superpowers/specs/`
+
+## 협업 규칙
+
+- 사용자에게 묻는 질문(확인/선택지 등)은 항상 한국어로 한다. 스킬 템플릿이 영어로 된 질문 문구를 제공하더라도 한국어로 번역해서 물어볼 것.
