@@ -2,6 +2,7 @@ package sallim.chore.application
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import sallim.chore.domain.ChoreDefinition
 import sallim.chore.domain.ChoreInstance
 import sallim.chore.domain.ChoreInstanceId
 import sallim.chore.domain.ChoreInstanceRepository
@@ -19,5 +20,23 @@ class ChoreInstanceService(private val choreInstanceRepository: ChoreInstanceRep
         val instance = choreInstanceRepository.findById(id) ?: throw NotFoundException("chore instance not found: $id")
         instance.complete(completedBy)
         return choreInstanceRepository.save(instance)
+    }
+
+    @Transactional
+    fun generateDueInstances(definitions: List<ChoreDefinition>, today: LocalDate): List<ChoreInstance> {
+        val allInstances = choreInstanceRepository.findAll()
+        return definitions.flatMap { definition ->
+            val latest = allInstances
+                .filter { it.choreDefinitionId == definition.id }
+                .maxByOrNull { it.scheduledDate } ?: return@flatMap emptyList()
+
+            val created = mutableListOf<ChoreInstance>()
+            var next = definition.recurrence.nextOccurrence(latest.scheduledDate)
+            while (!next.isAfter(today)) {
+                created += choreInstanceRepository.save(ChoreInstance.schedule(definition.id, next))
+                next = definition.recurrence.nextOccurrence(next)
+            }
+            created
+        }
     }
 }

@@ -5,11 +5,14 @@ import org.springframework.transaction.annotation.Transactional
 import sallim.chore.domain.ChoreDefinition
 import sallim.chore.domain.ChoreDefinitionId
 import sallim.chore.domain.ChoreDefinitionRepository
+import sallim.chore.domain.ChoreInstance
 import sallim.chore.domain.ChoreInstanceRepository
 import sallim.chore.domain.MemberId
 import sallim.chore.domain.RecurrencePolicy
 import sallim.chore.domain.RoomId
 import sallim.chore.domain.RoomRepository
+import java.time.LocalDate
+import java.time.ZoneId
 
 @Service
 class ChoreDefinitionService(
@@ -26,10 +29,13 @@ class ChoreDefinitionService(
         recurrence: RecurrencePolicy, howToSteps: List<String>, videoQuery: String
     ): ChoreDefinition {
         roomRepository.findById(roomId) ?: throw IllegalArgumentException("room not found: $roomId")
-        val definition = ChoreDefinition(
-            ChoreDefinitionId.generate(), roomId, label, assigneeId, recurrence, howToSteps, videoQuery
+        val definition = choreDefinitionRepository.save(
+            ChoreDefinition(
+                ChoreDefinitionId.generate(), roomId, label, assigneeId, recurrence, howToSteps, videoQuery
+            )
         )
-        return choreDefinitionRepository.save(definition)
+        choreInstanceRepository.save(ChoreInstance.schedule(definition.id, LocalDate.now(ZoneId.of("Asia/Seoul"))))
+        return definition
     }
 
     @Transactional

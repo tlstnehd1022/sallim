@@ -4,6 +4,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.runApplication
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import org.springframework.scheduling.annotation.EnableScheduling
 
 // @SpringBootApplication's scanBasePackages only extends @ComponentScan — it does not
 // move where @EnableAutoConfiguration registers its "auto-configuration base package"
@@ -14,6 +15,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @SpringBootApplication(scanBasePackages = ["sallim"])
 @EnableJpaRepositories(basePackages = ["sallim"])
 @EntityScan(basePackages = ["sallim"])
+@EnableScheduling
 class SallimApplication
 
 fun main(args: Array<String>) {

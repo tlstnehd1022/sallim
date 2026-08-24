@@ -2,15 +2,26 @@ package sallim.chore.application
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import sallim.chore.domain.ChoreDefinition
 import sallim.chore.domain.ChoreDefinitionId
 import sallim.chore.domain.ChoreInstance
 import sallim.chore.domain.ChoreInstanceId
+import sallim.chore.domain.Daily
 import sallim.chore.domain.MemberId
+import sallim.chore.domain.Monthly
+import sallim.chore.domain.RecurrencePolicy
+import sallim.chore.domain.RoomId
+import sallim.chore.domain.WeeklyNTimes
 import java.time.LocalDate
 
 class ChoreInstanceServiceTest : FunSpec({
+    fun choreDefinition(recurrence: RecurrencePolicy): ChoreDefinition = ChoreDefinition(
+        ChoreDefinitionId.generate(), RoomId.generate(), "청소", MemberId.generate(), recurrence, listOf("단계1"), "영상"
+    )
+
     test("날짜로 필터링해 조회한다") {
         val instances = FakeChoreInstanceRepository()
         instances.save(ChoreInstance.schedule(ChoreDefinitionId.generate(), LocalDate.of(2026, 8, 20)))
@@ -48,5 +59,62 @@ class ChoreInstanceServiceTest : FunSpec({
         service.complete(instance.id, member)
 
         shouldThrow<IllegalStateException> { service.complete(instance.id, member) }
+    }
+
+    test("최근 인스턴스로부터 오늘까지 매일 소급 생성한다") {
+        val instances = FakeChoreInstanceRepository()
+        val service = ChoreInstanceService(instances)
+        val definition = choreDefinition(Daily)
+        val today = LocalDate.now()
+        instances.save(ChoreInstance.schedule(definition.id, today.minusDays(3)))
+
+        val created = service.generateDueInstances(listOf(definition), today)
+
+        created shouldHaveSize 3
+        created.map { it.scheduledDate }.toSet() shouldBe setOf(today.minusDays(2), today.minusDays(1), today)
+    }
+
+    test("WeeklyNTimes도 소급 생성한다") {
+        val instances = FakeChoreInstanceRepository()
+        val service = ChoreInstanceService(instances)
+        val definition = choreDefinition(WeeklyNTimes(2))  // nextOccurrence는 7/2=3일 간격
+        val today = LocalDate.now()
+        instances.save(ChoreInstance.schedule(definition.id, today.minusDays(7)))
+
+        val created = service.generateDueInstances(listOf(definition), today)
+
+        created shouldHaveSize 2
+        created.map { it.scheduledDate }.toSet() shouldBe setOf(today.minusDays(4), today.minusDays(1))
+    }
+
+    test("Monthly도 소급 생성한다") {
+        val instances = FakeChoreInstanceRepository()
+        val service = ChoreInstanceService(instances)
+        val definition = choreDefinition(Monthly)
+        val today = LocalDate.of(2026, 6, 15)
+        instances.save(ChoreInstance.schedule(definition.id, today.minusMonths(2)))
+
+        val created = service.generateDueInstances(listOf(definition), today)
+
+        created shouldHaveSize 2
+        created.map { it.scheduledDate }.toSet() shouldBe setOf(today.minusMonths(1), today)
+    }
+
+    test("이미 오늘까지 인스턴스가 있으면 아무것도 생성하지 않는다") {
+        val instances = FakeChoreInstanceRepository()
+        val service = ChoreInstanceService(instances)
+        val definition = choreDefinition(Daily)
+        val today = LocalDate.now()
+        instances.save(ChoreInstance.schedule(definition.id, today))
+
+        service.generateDueInstances(listOf(definition), today).shouldBeEmpty()
+    }
+
+    test("인스턴스가 하나도 없는 정의는 건너뛴다") {
+        val instances = FakeChoreInstanceRepository()
+        val service = ChoreInstanceService(instances)
+        val definition = choreDefinition(Daily)
+
+        service.generateDueInstances(listOf(definition), LocalDate.now()).shouldBeEmpty()
     }
 })
