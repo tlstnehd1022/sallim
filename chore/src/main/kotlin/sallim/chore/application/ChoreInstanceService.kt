@@ -1,5 +1,6 @@
 package sallim.chore.application
 
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import sallim.chore.domain.ChoreDefinition
@@ -10,7 +11,10 @@ import sallim.chore.domain.MemberId
 import java.time.LocalDate
 
 @Service
-class ChoreInstanceService(private val choreInstanceRepository: ChoreInstanceRepository) {
+class ChoreInstanceService(
+    private val choreInstanceRepository: ChoreInstanceRepository,
+    private val eventPublisher: ApplicationEventPublisher = ApplicationEventPublisher { }
+) {
     @Transactional(readOnly = true)
     fun listByDate(date: LocalDate): List<ChoreInstance> =
         choreInstanceRepository.findAll().filter { it.scheduledDate == date }
@@ -19,7 +23,10 @@ class ChoreInstanceService(private val choreInstanceRepository: ChoreInstanceRep
     fun complete(id: ChoreInstanceId, completedBy: MemberId): ChoreInstance {
         val instance = choreInstanceRepository.findById(id) ?: throw NotFoundException("chore instance not found: $id")
         instance.complete(completedBy)
-        return choreInstanceRepository.save(instance)
+        val saved = choreInstanceRepository.save(instance)
+        instance.domainEvents.forEach { eventPublisher.publishEvent(it) }
+        instance.clearEvents()
+        return saved
     }
 
     @Transactional

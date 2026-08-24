@@ -5,6 +5,8 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import org.springframework.context.ApplicationEventPublisher
+import sallim.chore.domain.ChoreCompletedEvent
 import sallim.chore.domain.ChoreDefinition
 import sallim.chore.domain.ChoreDefinitionId
 import sallim.chore.domain.ChoreInstance
@@ -116,5 +118,21 @@ class ChoreInstanceServiceTest : FunSpec({
         val definition = choreDefinition(Daily)
 
         service.generateDueInstances(listOf(definition), LocalDate.now()).shouldBeEmpty()
+    }
+
+    test("완료 처리하면 ChoreCompletedEvent가 발행된다") {
+        val instances = FakeChoreInstanceRepository()
+        val instance = ChoreInstance.schedule(ChoreDefinitionId.generate(), LocalDate.of(2026, 8, 20))
+        instances.save(instance)
+        val publishedEvents = mutableListOf<Any>()
+        val service = ChoreInstanceService(instances, ApplicationEventPublisher { publishedEvents.add(it) })
+        val member = MemberId.generate()
+
+        service.complete(instance.id, member)
+
+        publishedEvents shouldHaveSize 1
+        val event = publishedEvents.first() as ChoreCompletedEvent
+        event.choreInstanceId shouldBe instance.id
+        event.completedBy shouldBe member
     }
 })
