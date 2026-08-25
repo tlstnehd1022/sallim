@@ -19,4 +19,12 @@ class TransactionalChoreEventPublisherTest : FunSpec({
         producer.published shouldHaveSize 1
         producer.published.first() shouldBe event
     }
+
+    test("producer가 실패해도 예외가 밖으로 전파되지 않는다") {
+        val producer = FakeChoreEventProducer().apply { shouldThrow = true }
+        val publisher = TransactionalChoreEventPublisher(producer)
+        val event = ChoreCompletedEvent(ChoreInstanceId.generate(), ChoreDefinitionId.generate(), MemberId.generate())
+
+        publisher.onChoreCompleted(event)
+    }
 })

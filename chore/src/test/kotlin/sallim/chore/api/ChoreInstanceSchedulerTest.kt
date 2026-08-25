@@ -2,6 +2,7 @@ package sallim.chore.api
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldHaveSize
+import org.springframework.context.ApplicationEventPublisher
 import sallim.chore.application.ChoreDefinitionService
 import sallim.chore.application.ChoreInstanceService
 import sallim.chore.application.FakeChoreDefinitionRepository
@@ -20,7 +21,7 @@ class ChoreInstanceSchedulerTest : FunSpec({
         val instances = FakeChoreInstanceRepository()
         val roomService = RoomService(rooms, definitions, instances)
         val definitionService = ChoreDefinitionService(definitions, rooms, instances)
-        val instanceService = ChoreInstanceService(instances)
+        val instanceService = ChoreInstanceService(instances, ApplicationEventPublisher { })
         val scheduler = ChoreInstanceScheduler(definitionService, instanceService)
 
         val room = roomService.create("거실", 26, 38, 74, 50, 1)

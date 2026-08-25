@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
@@ -29,7 +30,7 @@ class ChoreInstanceControllerTest {
         val instances = FakeChoreInstanceRepository()
 
         @Bean
-        fun choreInstanceService(): ChoreInstanceService = ChoreInstanceService(instances)
+        fun choreInstanceService(): ChoreInstanceService = ChoreInstanceService(instances, ApplicationEventPublisher { })
     }
 
     @Autowired

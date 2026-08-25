@@ -13,7 +13,7 @@ import java.time.LocalDate
 @Service
 class ChoreInstanceService(
     private val choreInstanceRepository: ChoreInstanceRepository,
-    private val eventPublisher: ApplicationEventPublisher = ApplicationEventPublisher { }
+    private val eventPublisher: ApplicationEventPublisher
 ) {
     @Transactional(readOnly = true)
     fun listByDate(date: LocalDate): List<ChoreInstance> =

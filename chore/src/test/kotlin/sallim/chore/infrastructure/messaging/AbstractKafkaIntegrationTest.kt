@@ -19,6 +19,7 @@ abstract class AbstractKafkaIntegrationTest {
             registry.add("spring.kafka.consumer.key-deserializer") { "org.apache.kafka.common.serialization.StringDeserializer" }
             registry.add("spring.kafka.consumer.value-deserializer") { "org.springframework.kafka.support.serializer.JsonDeserializer" }
             registry.add("spring.kafka.consumer.properties.spring.json.trusted.packages") { "sallim.chore.domain" }
+            registry.add("spring.kafka.consumer.auto-offset-reset") { "earliest" }
         }
     }
 }

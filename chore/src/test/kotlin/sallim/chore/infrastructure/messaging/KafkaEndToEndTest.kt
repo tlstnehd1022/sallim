@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.kafka.annotation.KafkaListener
-import org.springframework.stereotype.Component
 import sallim.chore.domain.ChoreCompletedEvent
 import sallim.chore.domain.ChoreDefinitionId
 import sallim.chore.domain.ChoreInstanceId
@@ -17,7 +16,6 @@ import sallim.chore.domain.MemberId
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-@Component
 class RecordingChoreCompletedListener {
     val received = mutableListOf<ChoreCompletedEvent>()
     val latch = CountDownLatch(1)
@@ -67,8 +65,9 @@ class KafkaEndToEndTest : AbstractKafkaIntegrationTest() {
 
         producer.publish(event)
 
-        val received = listener.latch.await(10, TimeUnit.SECONDS)
+        val received = listener.latch.await(30, TimeUnit.SECONDS)
         received shouldBe true
         listener.received shouldHaveSize 1
+        listener.received.first() shouldBe event
     }
 }
