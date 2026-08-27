@@ -31,4 +31,12 @@ class ChoreStatsServiceTest : FunSpec({
             service.countByMember(LocalDate.of(2026, 8, 31), LocalDate.of(2026, 8, 1))
         }
     }
+
+    test("to가 비현실적으로 먼 미래면 IllegalArgumentException") {
+        val service = ChoreStatsService(FakeChoreCompletionStatsQuery())
+
+        shouldThrow<IllegalArgumentException> {
+            service.countByMember(LocalDate.of(2026, 8, 1), LocalDate.MAX)
+        }
+    }
 })

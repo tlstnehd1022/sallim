@@ -40,7 +40,7 @@ data class MemberCompletionCount(val memberId: MemberId, val count: Long)
 interface ChoreCompletionRecordJpaRepository : JpaRepository<ChoreCompletionRecordEntity, String> {
     fun existsByChoreInstanceId(choreInstanceId: String): Boolean
 
-    @Query("SELECT r.completedBy AS memberId, COUNT(r) AS count FROM ChoreCompletionRecordEntity r WHERE r.completedAt BETWEEN :from AND :to GROUP BY r.completedBy")
+    @Query("SELECT r.completedBy AS memberId, COUNT(r) AS count FROM ChoreCompletionRecordEntity r WHERE r.completedAt >= :from AND r.completedAt < :to GROUP BY r.completedBy")
     fun countByMemberBetween(from: Instant, to: Instant): List<MemberCountProjection>
 }
 
@@ -104,6 +104,8 @@ class ChoreStatsController(private val statsService: ChoreStatsService) {
 | GET | `/api/chore-stats?from=2026-08-01&to=2026-08-24` | `200 [{memberId, count}]` / `400`(파라미터 누락 또는 `from > to`) |
 
 `from`/`to` 파라미터 누락은 Spring의 `MissingServletRequestParameterException`을 기존 `ApiExceptionHandler`의 `handleExceptionInternal` 오버라이드가 이미 `{"error": ...}` 400으로 매핑하므로 별도 처리 불필요.
+
+완료 기록이 없는 멤버는 응답 배열에 아예 나타나지 않는다(`count=0`으로 채워 반환하지 않음) — GROUP BY 집계의 자연스러운 결과이며, 클라이언트가 멤버 목록과 이 응답을 직접 매핑할 때 유의해야 한다.
 
 ## 테스트 전략
 

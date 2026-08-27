@@ -16,7 +16,7 @@ class JpaChoreCompletionStatsQuery(
         val zone = ZoneId.of("Asia/Seoul")
         val fromInstant = from.atStartOfDay(zone).toInstant()
         val toInstant = to.plusDays(1).atStartOfDay(zone).toInstant()
-        return jpaRepository.countByMemberBetween(fromInstant, toInstant)
+        return jpaRepository.countByMemberCompletedAtInRange(fromInstant, toInstant)
             .map { MemberCompletionCount(MemberId(UUID.fromString(it.memberId)), it.count) }
     }
 }

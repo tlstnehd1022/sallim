@@ -48,11 +48,13 @@ class ChoreStatsControllerTest {
     fun `from 파라미터가 없으면 400`() {
         mockMvc.perform(get("/api/chore-stats").param("to", "2026-08-31"))
             .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.error").exists())
     }
 
     @Test
     fun `from이 to보다 늦으면 400`() {
         mockMvc.perform(get("/api/chore-stats").param("from", "2026-08-31").param("to", "2026-08-01"))
             .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.error").exists())
     }
 }

@@ -77,4 +77,33 @@ class JpaChoreCompletionStatsQueryTest : AbstractMySqlIntegrationTest() {
 
         result shouldHaveSize 0
     }
+
+    @Test
+    fun `from 날짜 시작 시각의 기록도 포함된다`() {
+        val member = MemberId.generate()
+        val definitionId = ChoreDefinitionId.generate()
+        recordRepository.save(ChoreInstanceId.generate(), definitionId, member, LocalDate.of(2026, 8, 1).atStartOfDay(zone).toInstant())
+        em.flush()
+        em.clear()
+
+        val result = statsQuery.countByMember(LocalDate.of(2026, 8, 1), LocalDate.of(2026, 8, 31))
+
+        result shouldHaveSize 1
+        result.first().count shouldBe 1L
+    }
+
+    @Test
+    fun `from과 to가 같으면 그 하루만 집계한다`() {
+        val member = MemberId.generate()
+        val definitionId = ChoreDefinitionId.generate()
+        recordRepository.save(ChoreInstanceId.generate(), definitionId, member, LocalDate.of(2026, 8, 10).atTime(12, 0).atZone(zone).toInstant())
+        recordRepository.save(ChoreInstanceId.generate(), definitionId, member, LocalDate.of(2026, 8, 11).atStartOfDay(zone).toInstant())
+        em.flush()
+        em.clear()
+
+        val result = statsQuery.countByMember(LocalDate.of(2026, 8, 10), LocalDate.of(2026, 8, 10))
+
+        result shouldHaveSize 1
+        result.first().count shouldBe 1L
+    }
 }
