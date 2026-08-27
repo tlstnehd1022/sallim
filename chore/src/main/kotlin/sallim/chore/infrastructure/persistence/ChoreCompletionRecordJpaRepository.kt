@@ -11,7 +11,7 @@ interface ChoreCompletionRecordJpaRepository : JpaRepository<ChoreCompletionReco
     @Query(
         "SELECT r.completedBy AS memberId, COUNT(r) AS count " +
             "FROM ChoreCompletionRecordEntity r " +
-            "WHERE r.completedAt BETWEEN :from AND :to " +
+            "WHERE r.completedAt >= :from AND r.completedAt < :to " +
             "GROUP BY r.completedBy"
     )
     fun countByMemberBetween(@Param("from") from: Instant, @Param("to") to: Instant): List<MemberCountProjection>
