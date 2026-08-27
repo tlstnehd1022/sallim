@@ -91,10 +91,10 @@ interface ChoreCompletionRecordJpaRepository : JpaRepository<ChoreCompletionReco
     @Query(
         "SELECT r.completedBy AS memberId, COUNT(r) AS count " +
             "FROM ChoreCompletionRecordEntity r " +
-            "WHERE r.completedAt >= :from AND r.completedAt < :to " +
+            "WHERE r.completedAt >= :fromInclusive AND r.completedAt < :toExclusive " +
             "GROUP BY r.completedBy"
     )
-    fun countByMemberBetween(@Param("from") from: Instant, @Param("to") to: Instant): List<MemberCountProjection>
+    fun countByMemberCompletedAtInRange(@Param("fromInclusive") fromInclusive: Instant, @Param("toExclusive") toExclusive: Instant): List<MemberCountProjection>
 }
 
 interface MemberCountProjection {
@@ -216,7 +216,7 @@ class JpaChoreCompletionStatsQuery(
         val zone = ZoneId.of("Asia/Seoul")
         val fromInstant = from.atStartOfDay(zone).toInstant()
         val toInstant = to.plusDays(1).atStartOfDay(zone).toInstant()
-        return jpaRepository.countByMemberBetween(fromInstant, toInstant)
+        return jpaRepository.countByMemberCompletedAtInRange(fromInstant, toInstant)
             .map { MemberCompletionCount(MemberId(UUID.fromString(it.memberId)), it.count) }
     }
 }
