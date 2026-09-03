@@ -84,4 +84,34 @@ class CalendarEventTest : FunSpec({
 
         result.shouldBeEmpty()
     }
+
+    test("Monthly 반복은 말일 시작 시 짧은 달을 지나면서 날짜가 영구히 밀린다 (알려진 한계)") {
+        val startAt = LocalDateTime.of(2026, 1, 31, 10, 0)
+        val recurring = event(startAt, Monthly)
+
+        val result = recurring.occurrencesIn(LocalDate.of(2026, 1, 1), LocalDate.of(2026, 4, 30))
+
+        result shouldBe listOf(
+            LocalDateTime.of(2026, 1, 31, 10, 0),
+            LocalDateTime.of(2026, 2, 28, 10, 0),
+            LocalDateTime.of(2026, 3, 28, 10, 0),  // 3/31이 아니라 3/28 — 2월 클램핑이 영구히 이어짐
+            LocalDateTime.of(2026, 4, 28, 10, 0)   // 4/30도 아님
+        )
+    }
+
+    test("from이 to보다 늦으면 IllegalArgumentException") {
+        val single = event(LocalDateTime.of(2026, 8, 20, 15, 0))
+
+        shouldThrow<IllegalArgumentException> {
+            single.occurrencesIn(LocalDate.of(2026, 8, 31), LocalDate.of(2026, 8, 1))
+        }
+    }
+
+    test("to가 비현실적으로 먼 미래면 IllegalArgumentException") {
+        val single = event(LocalDateTime.of(2026, 8, 20, 15, 0))
+
+        shouldThrow<IllegalArgumentException> {
+            single.occurrencesIn(LocalDate.of(2026, 8, 1), LocalDate.MAX)
+        }
+    }
 })
