@@ -11,12 +11,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.context.annotation.Import
 import sallim.chore.domain.ChoreDefinition
 import sallim.chore.domain.ChoreDefinitionId
-import sallim.chore.domain.Daily
 import sallim.chore.domain.MemberId
-import sallim.chore.domain.Monthly
-import sallim.chore.domain.RecurrencePolicy
 import sallim.chore.domain.RoomId
-import sallim.chore.domain.WeeklyNTimes
+import sallim.common.domain.Daily
+import sallim.common.domain.Monthly
+import sallim.common.domain.RecurrencePolicy
+import sallim.common.domain.WeeklyNTimes
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

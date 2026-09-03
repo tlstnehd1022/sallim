@@ -1,5 +1,7 @@
 package sallim.chore.domain
 
+import sallim.common.domain.RecurrencePolicy
+
 class ChoreDefinition(
     val id: ChoreDefinitionId,
     val roomId: RoomId,

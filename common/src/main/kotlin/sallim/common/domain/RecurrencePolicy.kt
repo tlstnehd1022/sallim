@@ -1,4 +1,4 @@
-package sallim.chore.domain
+package sallim.common.domain
 
 import java.time.LocalDate
 

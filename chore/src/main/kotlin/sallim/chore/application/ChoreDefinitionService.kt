@@ -8,7 +8,7 @@ import sallim.chore.domain.ChoreDefinitionRepository
 import sallim.chore.domain.ChoreInstance
 import sallim.chore.domain.ChoreInstanceRepository
 import sallim.chore.domain.MemberId
-import sallim.chore.domain.RecurrencePolicy
+import sallim.common.domain.RecurrencePolicy
 import sallim.chore.domain.RoomId
 import sallim.chore.domain.RoomRepository
 import java.time.LocalDate

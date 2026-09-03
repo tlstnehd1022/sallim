@@ -6,9 +6,9 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import sallim.chore.domain.ChoreDefinitionId
 import sallim.chore.domain.ChoreInstance
-import sallim.chore.domain.Daily
 import sallim.chore.domain.MemberId
 import sallim.chore.domain.RoomId
+import sallim.common.domain.Daily
 import java.time.LocalDate
 
 class ChoreDefinitionServiceTest : FunSpec({

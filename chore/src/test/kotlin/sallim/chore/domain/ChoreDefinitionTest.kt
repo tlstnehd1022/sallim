@@ -2,6 +2,7 @@ package sallim.chore.domain
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
+import sallim.common.domain.Daily
 
 class ChoreDefinitionTest : FunSpec({
     fun newDefinition(label: String = "설거지", steps: List<String> = listOf("헹구기")) = ChoreDefinition(

@@ -1,5 +1,10 @@
 package sallim.chore.domain
 
+import sallim.common.domain.Daily
+import sallim.common.domain.Monthly
+import sallim.common.domain.RecurrencePolicy
+import sallim.common.domain.WeeklyNTimes
+
 object DefaultRooms {
     val ME: MemberId = MemberId.generate()
     val PARTNER: MemberId = MemberId.generate()

@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RestController
 import sallim.chore.application.ChoreDefinitionService
 import sallim.chore.domain.ChoreDefinition
 import sallim.chore.domain.ChoreDefinitionId
-import sallim.chore.domain.Daily
 import sallim.chore.domain.MemberId
-import sallim.chore.domain.Monthly
-import sallim.chore.domain.RecurrencePolicy
 import sallim.chore.domain.RoomId
-import sallim.chore.domain.WeeklyNTimes
+import sallim.common.domain.Daily
+import sallim.common.domain.Monthly
+import sallim.common.domain.RecurrencePolicy
+import sallim.common.domain.WeeklyNTimes
 import java.util.UUID
 
 data class RecurrenceDto(val type: String, val times: Int?)

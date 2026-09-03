@@ -11,12 +11,12 @@ import sallim.chore.domain.ChoreDefinition
 import sallim.chore.domain.ChoreDefinitionId
 import sallim.chore.domain.ChoreInstance
 import sallim.chore.domain.ChoreInstanceId
-import sallim.chore.domain.Daily
 import sallim.chore.domain.MemberId
-import sallim.chore.domain.Monthly
-import sallim.chore.domain.RecurrencePolicy
 import sallim.chore.domain.RoomId
-import sallim.chore.domain.WeeklyNTimes
+import sallim.common.domain.Daily
+import sallim.common.domain.Monthly
+import sallim.common.domain.RecurrencePolicy
+import sallim.common.domain.WeeklyNTimes
 import java.time.LocalDate
 
 class ChoreInstanceServiceTest : FunSpec({

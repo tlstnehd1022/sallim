@@ -10,8 +10,8 @@ import sallim.chore.application.FakeChoreInstanceRepository
 import sallim.chore.application.FakeRoomRepository
 import sallim.chore.application.RoomService
 import sallim.chore.domain.ChoreInstance
-import sallim.chore.domain.Daily
 import sallim.chore.domain.MemberId
+import sallim.common.domain.Daily
 import java.time.LocalDate
 
 class ChoreInstanceSchedulerTest : FunSpec({
