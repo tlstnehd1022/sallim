@@ -9,7 +9,7 @@ import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 import sallim.chore.application.NotFoundException
 
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = ["sallim.chore"])
 class ApiExceptionHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(NotFoundException::class)
     fun notFound(e: NotFoundException) = ResponseEntity.status(404).body(mapOf("error" to e.message))

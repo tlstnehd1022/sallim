@@ -9,8 +9,8 @@ import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 import sallim.calendar.application.NotFoundException
 
-@RestControllerAdvice
-class ApiExceptionHandler : ResponseEntityExceptionHandler() {
+@RestControllerAdvice(basePackages = ["sallim.calendar"])
+class CalendarApiExceptionHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(NotFoundException::class)
     fun notFound(e: NotFoundException) = ResponseEntity.status(404).body(mapOf("error" to e.message))
 
